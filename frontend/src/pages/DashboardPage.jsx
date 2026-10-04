@@ -134,8 +134,19 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Top metric cards */}
-      <section className="dashboard-metrics">
+      {/* Fatal error — first load failed, no prior data to show */}
+      {error && summary === null && (
+        <div className="dashboard-fatal-error">
+          <span className="dashboard-fatal-error__icon">⚠️</span>
+          <h2>Failed to load dashboard</h2>
+          <p>{error}</p>
+          <button className="btn btn-primary" onClick={refresh}>Retry</button>
+        </div>
+      )}
+
+      {/* Top metric cards — hidden when fatal error */}
+      {!(error && summary === null) && (
+      <section className="dashboard-metrics" aria-busy={loading ? 'true' : undefined}>
         <DashboardCard
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
@@ -189,9 +200,10 @@ export default function DashboardPage() {
           accent="success"
         />
       </section>
+      )}
 
-      {/* Error banner */}
-      {error && !loading && (
+      {/* Error banner — inline refresh-failed banner (only when we already have prior data) */}
+      {error && !loading && summary !== null && (
         <div className="dashboard-error" role="alert">
           <span>{error}</span>
           <button className="dashboard-error-retry" onClick={handleRetry}>
@@ -200,8 +212,18 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Threat breakdown + recent scans */}
-      <section className="dashboard-grid">
+      {/* Empty state — no scans yet */}
+      {!loading && total === 0 && summary !== null && !(error && summary === null) && (
+        <div className="dashboard-empty-state">
+          <span className="dashboard-empty-icon">🔍</span>
+          <p>No security scans yet.</p>
+          <p>Use <strong>Quick Analysis</strong> below to run your first scan.</p>
+        </div>
+      )}
+
+      {/* Threat breakdown + recent scans — hidden when fatal error */}
+      {!(error && summary === null) && (
+      <section className={`dashboard-grid${loading ? ' dashboard-loading-overlay' : ''}`}>
         {/* Threat summary card */}
         <DashboardCard title="Threat Summary" icon="◆">
           {loading ? (
@@ -272,6 +294,7 @@ export default function DashboardPage() {
           )}
         </DashboardCard>
       </section>
+      )}
 
       {/* Quick actions — static navigation, no API data needed */}
       <section className="dashboard-actions">
