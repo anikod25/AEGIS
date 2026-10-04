@@ -64,8 +64,17 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse
     """
     user = db.query(User).filter(User.email == payload.email.lower()).first()
 
-    # Deliberate: same error for "not found" and "wrong password"
-    if user is None or not verify_password(payload.password, user.password_hash):
+    if user is None:
+        # Run bcrypt anyway to prevent timing-based user enumeration
+        try:
+            verify_password("dummy", "$2b$12$KIXFz4dummydummydummydummydummydummydummydumm")
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password.",
+        )
+    if not verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password.",
