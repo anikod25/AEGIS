@@ -16,6 +16,7 @@ class UrlAnalysisRequest(BaseModel):
     @classmethod
     def validate_url(cls, v: str) -> str:
         v = v.strip()
+        # Scheme check uses IGNORECASE and strips whitespace — mixed-case bypass is prevented.
         if not re.match(r"^https?://", v, re.IGNORECASE):
             raise ValueError("URL must start with http:// or https://")
         # Reject empty host after scheme

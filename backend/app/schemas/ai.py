@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ---------------------------------------------------------------------------
@@ -13,9 +13,9 @@ from pydantic import BaseModel, Field
 
 class IndicatorEvidence(BaseModel):
     """A single detected indicator passed to Gemini — no raw secrets."""
-    id: str | None = None
-    name: str
-    detail: str
+    id: str | None = Field(default=None, max_length=100)
+    name: str = Field(max_length=200)
+    detail: str = Field(max_length=500)
     severity: str
 
 
@@ -36,6 +36,16 @@ class AiExplainRequest(BaseModel):
     indicators: list[IndicatorEvidence] = Field(default_factory=list, max_length=20)
     # Safe metadata only — no secrets, no raw credentials
     context_fields: dict[str, str] = Field(default_factory=dict, max_length=10)
+
+    @field_validator("context_fields")
+    @classmethod
+    def validate_context_fields(cls, v: dict[str, str]) -> dict[str, str]:
+        for key, value in v.items():
+            if len(key) > 50:
+                raise ValueError("Each context_fields key must be at most 50 characters.")
+            if len(value) > 500:
+                raise ValueError("Each context_fields value must be at most 500 characters.")
+        return v
 
 
 # ---------------------------------------------------------------------------
