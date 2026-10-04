@@ -81,9 +81,9 @@ export const ai = {
 
 // -- Scan History ----------------------------------------------------------
 export const scanHistory = {
-  list:      (params) => request('GET',  `/scans?${new URLSearchParams(params)}`),
-  getById:   (id)     => request('GET',  `/scans/${id}`),
-  deleteById:(id)     => request('DELETE',`/scans/${id}`),
+  list:      (params) => request('GET',    `/scans?${new URLSearchParams(params)}`, undefined, true),
+  getById:   (id)     => request('GET',    `/scans/${id}`,                          undefined, true),
+  deleteById:(id)     => request('DELETE', `/scans/${id}`,                          undefined, true),
 }
 
 // -- Reports ---------------------------------------------------------------

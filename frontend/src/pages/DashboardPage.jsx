@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardCard from '../components/DashboardCard'
-import { dashboard } from '../services/api'
+import { useDashboard } from '../hooks/useDashboard'
 import { mockQuickActions } from '../data/mockData'
 import './DashboardPage.css'
 
@@ -90,23 +89,7 @@ function ThreatRow({ label, count, total, color }) {
 
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const [summary,  setSummary]  = useState(null)
-  const [loading,  setLoading]  = useState(true)
-  const [apiError, setApiError] = useState(null)
-
-  useEffect(() => {
-    setLoading(true)
-    setApiError(null)
-    dashboard.getSummary()
-      .then(data => {
-        setSummary(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setApiError(err.message ?? 'Failed to load dashboard data.')
-        setLoading(false)
-      })
-  }, [])
+  const { summary, loading, error, refresh } = useDashboard()
 
   const stats   = summary?.threat_stats  ?? null
   const score   = computeSecurityScore(stats)
@@ -116,11 +99,7 @@ export default function DashboardPage() {
   const weekCount = summary?.scans_this_week ?? 0
 
   function handleRetry() {
-    setLoading(true)
-    setApiError(null)
-    dashboard.getSummary()
-      .then(data => { setSummary(data); setLoading(false) })
-      .catch(err => { setApiError(err.message ?? 'Failed to load.'); setLoading(false) })
+    refresh()
   }
 
   return (
@@ -194,9 +173,9 @@ export default function DashboardPage() {
       </section>
 
       {/* Error banner */}
-      {apiError && !loading && (
+      {error && !loading && (
         <div className="dashboard-error" role="alert">
-          <span>{apiError}</span>
+          <span>{error}</span>
           <button className="dashboard-error-retry" onClick={handleRetry}>
             Retry
           </button>
