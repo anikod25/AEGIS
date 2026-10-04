@@ -17,10 +17,14 @@ class Settings(BaseSettings):
     )
 
     APP_ENV: str = "development"
-    API_HOST: str = "127.0.0.1"
+    API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
 
     DATABASE_URL: str  # required — must be set in .env
+
+    # Service-to-service networking (used for informational/config purposes)
+    MYSQL_HOST: str = "localhost"
+    MYSQL_PORT: int = 3306
 
     JWT_SECRET_KEY: str  # required — must be set in .env
     JWT_ALGORITHM: str = "HS256"
