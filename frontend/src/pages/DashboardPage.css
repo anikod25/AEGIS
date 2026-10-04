@@ -295,3 +295,13 @@
   border-radius: 4px;
   transition: width 0.4s ease, background 0.4s ease;
 }
+
+.scan-item--clickable {
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 0.15s;
+}
+
+.scan-item--clickable:hover {
+  background: var(--bg-elevated, #23263a);
+}

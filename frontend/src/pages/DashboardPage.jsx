@@ -66,6 +66,8 @@ const TYPE_LABEL = {
   password: 'Password',
 }
 
+const TYPE_PATH = { url: '/url', phishing: '/phishing', password: '/password' }
+
 function timeAgo(isoString) {
   const diff = Math.floor((Date.now() - new Date(isoString)) / 1000)
   if (diff < 60)  return `${diff}s ago`
@@ -244,15 +246,22 @@ export default function DashboardPage() {
                 {summary.recent_scans.map((scan) => {
                   const sev = SEVERITY_MAP[scan.risk_level] ?? 'info'
                   return (
-                    <li key={scan.id} className="scan-item">
+                    <li
+                      key={scan.id}
+                      className="scan-item scan-item--clickable"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(TYPE_PATH[scan.scan_type] ?? '/')}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(TYPE_PATH[scan.scan_type] ?? '/') }}
+                    >
                       <span className={`scan-badge scan-badge--${sev}`}>
                         {TYPE_LABEL[scan.scan_type] ?? scan.scan_type}
                       </span>
                       <span className="scan-target" title={scan.target}>
-                        {scan.target}
+                        {scan.target.length > 40 ? scan.target.slice(0, 40) + '…' : scan.target}
                       </span>
                       <span className={`scan-result scan-result--${sev}`}>
-                        {RISK_LABEL[scan.risk_level] ?? scan.risk_level}
+                        {RISK_LABEL[scan.risk_level] ?? scan.risk_level}{scan.risk_score != null ? ` (${scan.risk_score})` : ''}
                       </span>
                       <span className="scan-time">{timeAgo(scan.scanned_at)}</span>
                     </li>
