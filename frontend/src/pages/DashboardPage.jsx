@@ -33,6 +33,14 @@ function scoreAccent(score) {
   return 'danger'
 }
 
+function scoreColor(score) {
+  if (score === null) return 'var(--text-muted, #888)'
+  if (score >= 80)   return 'var(--success)'
+  if (score >= 60)   return 'var(--warning)'
+  if (score >= 40)   return 'var(--danger)'
+  return 'var(--danger)'
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -91,10 +99,11 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const { summary, loading, error, refresh } = useDashboard()
 
-  const stats   = summary?.threat_stats  ?? null
-  const score   = computeSecurityScore(stats)
-  const label   = scoreLabel(score)
-  const accent  = scoreAccent(score)
+  const stats      = summary?.threat_stats  ?? null
+  const score      = computeSecurityScore(stats)
+  const label      = scoreLabel(score)
+  const accent     = scoreAccent(score)
+  const scoreColorVal = scoreColor(score)
   const total   = stats?.total ?? 0
   const weekCount = summary?.scans_this_week ?? 0
 
@@ -131,7 +140,14 @@ export default function DashboardPage() {
           subtitle={loading ? 'Loading…' : `Status: ${label}`}
           icon="◆"
           accent={loading ? 'default' : accent}
-        />
+        >
+          <div className="score-bar-track">
+            <div
+              className="score-bar-fill"
+              style={{ width: `${score ?? 0}%`, background: scoreColorVal }}
+            />
+          </div>
+        </DashboardCard>
 
         <DashboardCard
           title="Total Scans"
