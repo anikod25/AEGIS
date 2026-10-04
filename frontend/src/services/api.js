@@ -4,7 +4,7 @@
  * Components never call fetch() directly.
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api'
+const BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 function getToken() {
   return localStorage.getItem('aegis_token')
@@ -88,7 +88,12 @@ export const scanHistory = {
 
 // -- Reports ---------------------------------------------------------------
 export const reports = {
-  list:     () => request('GET',  '/reports'),
-  getById:  (id) => request('GET', `/reports/${id}`),
-  generate: (data) => request('POST', '/reports', data),
+  list:     ()     => request('GET',  '/reports',       undefined, true),
+  getById:  (id)   => request('GET',  `/reports/${id}`, undefined, true),
+  generate: (data) => request('POST', '/reports',       data,      true),
+}
+
+// -- Gateway ---------------------------------------------------------------
+export const gateway = {
+  health: () => fetch('/health').then(r => r.json()),
 }
