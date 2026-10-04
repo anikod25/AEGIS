@@ -140,7 +140,7 @@ export default function DashboardPage() {
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
           subtitle={loading ? 'Loading…' : `Status: ${label}`}
-          icon="◆"
+          icon="🛡"
           accent={loading ? 'default' : accent}
         >
           <div className="score-bar-track">
@@ -154,8 +154,8 @@ export default function DashboardPage() {
         <DashboardCard
           title="Total Scans"
           value={loading ? '…' : total}
-          subtitle={loading ? 'Loading…' : weekCount > 0 ? `+${weekCount} this week` : 'No scans this week'}
-          icon="◆"
+          subtitle={loading ? 'Loading…' : total === 0 ? 'Start scanning' : weekCount > 0 ? `+${weekCount} this week` : '0 this week'}
+          icon="📊"
           accent="info"
         />
 
@@ -166,8 +166,8 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.critical ?? 0} critical · ${stats?.high ?? 0} high`
           }
-          icon="◆"
-          accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) > 0 ? 'danger' : 'warning'}
+          icon="⚠"
+          accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) === 0 ? 'success' : 'danger'}
         />
 
         <DashboardCard
@@ -177,7 +177,7 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.medium ?? 0} medium · ${stats?.low ?? 0} low`
           }
-          icon="◆"
+          icon="🔶"
           accent={!loading && (stats?.medium ?? 0) > 0 ? 'warning' : 'default'}
         />
 
@@ -185,7 +185,7 @@ export default function DashboardPage() {
           title="Safe Results"
           value={loading ? '…' : stats?.safe ?? 0}
           subtitle={loading ? 'Loading…' : 'No threats detected'}
-          icon="◆"
+          icon="✅"
           accent="success"
         />
       </section>
