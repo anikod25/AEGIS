@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolve .env relative to the repo root (two levels up from this file:
@@ -31,6 +32,13 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     GEMINI_API_KEY: str = ""
+
+    @field_validator("JWT_SECRET_KEY")
+    @classmethod
+    def validate_jwt_secret_key(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError("JWT_SECRET_KEY must be at least 32 characters")
+        return v
 
 
 settings = Settings()
