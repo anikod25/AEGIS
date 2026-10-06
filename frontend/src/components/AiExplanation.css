@@ -13,12 +13,13 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 12px 20px;
+  padding: 10px 16px;
   background: none;
   border: none;
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s;
+  transition: background var(--transition-fast, 150ms ease);
 }
 .ai-trigger:hover { background: var(--bg-elevated); }
 

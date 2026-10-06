@@ -9,7 +9,6 @@
   color: var(--text-secondary);
 }
 
-.stub-icon { font-size: 56px; opacity: 0.6; }
 .stub-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
 .stub-desc { font-size: 14px; max-width: 360px; }
 

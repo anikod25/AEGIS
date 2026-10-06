@@ -21,7 +21,8 @@
 }
 
 .brand-icon {
-  font-size: 22px;
+  display: flex;
+  align-items: center;
   color: var(--accent);
 }
 
