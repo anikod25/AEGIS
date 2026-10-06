@@ -1,4 +1,4 @@
-"""AEGIS FastAPI application entry point."""
+﻿"""AEGIS FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
 
@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from backend.app.api.ai import router as ai_router
 from backend.app.api.assistant import router as assistant_router
+from backend.app.api.reports import router as reports_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.dashboard import router as dashboard_router
 from backend.app.api.password import router as password_router
@@ -19,7 +20,7 @@ from backend.app.core.database import Base, engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup — dev convenience; use Alembic in production
+    # Create tables on startup â€” dev convenience; use Alembic in production
     Base.metadata.create_all(bind=engine)
     yield
 
@@ -53,6 +54,7 @@ app.include_router(url_router, prefix="/api")
 app.include_router(phishing_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 app.include_router(assistant_router, prefix="/api")
+app.include_router(reports_router, prefix="/api")
 
 
 @app.get("/health", tags=["health"])
@@ -62,8 +64,9 @@ def health() -> dict:
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    # Do not log exc details to the response — stack traces must not reach the client
+    # Do not log exc details to the response â€” stack traces must not reach the client
     return JSONResponse(status_code=500, content={"detail": "An internal error occurred."})
 
 # Note: FastAPI's default RequestValidationError handler returns 422 with field paths,
 # which is acceptable for API clients. No override needed.
+
