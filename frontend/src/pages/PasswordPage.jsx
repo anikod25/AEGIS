@@ -41,7 +41,7 @@ export default function PasswordPage() {
   return (
     <div className="pw-page">
       <div className="pw-intro">
-        <h2 className="pw-heading">Password Analysis</h2>
+        <h2 className="pw-heading">Password Checker</h2>
         <p className="pw-sub">
           Evaluate your password against deterministic security rules.
           Your password is never stored or sent to any external service.
@@ -69,7 +69,7 @@ export default function PasswordPage() {
           </button>
         </div>
         <button className="pw-btn" type="submit" disabled={loading || !pwd}>
-          {loading ? 'Analysing…' : 'Analyse'}
+          {loading ? 'Checking…' : 'Check password'}
         </button>
       </form>
 
@@ -105,7 +105,7 @@ export default function PasswordPage() {
           {/* Weaknesses */}
           {result.weaknesses.length > 0 && (
             <div className="pw-section">
-              <h3 className="pw-section-title pw-section-title--danger">Weaknesses</h3>
+              <h3 className="pw-section-title pw-section-title--danger">Issues found</h3>
               <ul className="pw-list pw-list--danger">
                 {result.weaknesses.map((w, i) => <li key={i}>{w}</li>)}
               </ul>
@@ -115,7 +115,7 @@ export default function PasswordPage() {
           {/* Recommendations */}
           {result.recommendations.length > 0 && (
             <div className="pw-section">
-              <h3 className="pw-section-title pw-section-title--info">Recommendations</h3>
+              <h3 className="pw-section-title pw-section-title--info">How to improve</h3>
               <ul className="pw-list pw-list--info">
                 {result.recommendations.map((r, i) => <li key={i}>{r}</li>)}
               </ul>
@@ -123,7 +123,7 @@ export default function PasswordPage() {
           )}
 
           {result.weaknesses.length === 0 && result.recommendations.length === 0 && (
-            <p className="pw-all-good">No issues detected. Excellent password!</p>
+            <p className="pw-all-good">No issues found — this is a strong password.</p>
           )}
         </div>
       )}

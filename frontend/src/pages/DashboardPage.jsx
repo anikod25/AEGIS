@@ -139,8 +139,8 @@ export default function DashboardPage() {
       {error && summary === null && (
         <div className="dashboard-fatal-error">
           <Icon name="alert" size={32} />
-          <h2>Failed to load dashboard</h2>
-          <p>{error}</p>
+          <h2>Dashboard unavailable</h2>
+          <p>Could not load your dashboard data. Check your connection and try again.</p>
           <button className="btn btn-primary" onClick={refresh}>Retry</button>
         </div>
       )}
@@ -151,7 +151,7 @@ export default function DashboardPage() {
         <DashboardCard
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
-          subtitle={loading ? 'Loading…' : `Status: ${label}`}
+          subtitle={loading ? 'Loading…' : score === null ? 'Run your first scan to see a score' : `Status: ${label}`}
           icon={<Icon name="shield" size={16} />}
           accent={loading ? 'default' : accent}
         >
@@ -172,7 +172,7 @@ export default function DashboardPage() {
         />
 
         <DashboardCard
-          title="High Risk"
+          title="High Risk Findings"
           value={loading ? '…' : (stats?.critical ?? 0) + (stats?.high ?? 0)}
           subtitle={
             loading ? 'Loading…'
@@ -183,7 +183,7 @@ export default function DashboardPage() {
         />
 
         <DashboardCard
-          title="Medium / Low"
+          title="Other Findings"
           value={loading ? '…' : (stats?.medium ?? 0) + (stats?.low ?? 0)}
           subtitle={
             loading ? 'Loading…'
@@ -194,7 +194,7 @@ export default function DashboardPage() {
         />
 
         <DashboardCard
-          title="Safe Results"
+          title="Clean Results"
           value={loading ? '…' : stats?.safe ?? 0}
           subtitle={loading ? 'Loading…' : 'No threats detected'}
           icon={<Icon name="check" size={16} />}
@@ -217,8 +217,8 @@ export default function DashboardPage() {
       {!loading && total === 0 && summary !== null && !(error && summary === null) && (
         <div className="dashboard-empty-state">
           <Icon name="search" size={32} />
-          <p>No security scans yet.</p>
-          <p>Use <strong>Quick Analysis</strong> below to run your first scan.</p>
+          <p>No scans on record yet.</p>
+          <p>Use the tools below to analyse a URL, email, or password.</p>
         </div>
       )}
 
@@ -232,7 +232,7 @@ export default function DashboardPage() {
               {[1,2,3,4].map(i => <div key={i} className="dashboard-skeleton-row" />)}
             </div>
           ) : total === 0 ? (
-            <p className="dashboard-empty-hint">Run a scan to see your threat breakdown.</p>
+            <p className="dashboard-empty-hint">Complete a scan to see your threat breakdown.</p>
           ) : (
             <div className="threat-breakdown">
               <ThreatRow label="Critical" count={stats.critical} total={total} color="var(--danger)" />
@@ -251,7 +251,7 @@ export default function DashboardPage() {
               {[1,2,3,4,5].map(i => <div key={i} className="dashboard-skeleton-row" />)}
             </div>
           ) : !summary?.recent_scans?.length ? (
-            <p className="dashboard-empty-hint">No scans yet. Try analyzing a URL or email.</p>
+            <p className="dashboard-empty-hint">Your recent scans will appear here.</p>
           ) : (
             <>
               {summary.scans_by_type && (
@@ -299,7 +299,7 @@ export default function DashboardPage() {
 
       {/* Quick actions — static navigation, no API data needed */}
       <section className="dashboard-actions">
-        <h2 className="section-heading">Quick Analysis</h2>
+        <h2 className="section-heading">Run an Analysis</h2>
         <div className="action-grid">
           {mockQuickActions.map((action) => (
             <button

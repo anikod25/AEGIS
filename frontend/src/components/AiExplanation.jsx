@@ -47,7 +47,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
   }
 
   const statusLabel = loading
-    ? 'loading…'
+    ? 'loading'
     : data
       ? (data.ai_available ? '' : 'offline')
       : ''
@@ -62,7 +62,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
         aria-expanded={open}
       >
         <span className="ai-trigger-icon">AI</span>
-        <span className="ai-trigger-label">Explain with AI</span>
+        <span className="ai-trigger-label">AI Explanation</span>
         {statusLabel && (
           <span className="ai-trigger-status">{statusLabel}</span>
         )}
@@ -77,7 +77,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
           {loading && (
             <div className="ai-loading">
               <div className="ai-spinner" aria-hidden="true" />
-              Generating explanation…
+              Thinking…
             </div>
           )}
 
@@ -90,9 +90,9 @@ export default function AiExplanation({ fetchFn, resetKey }) {
               {/* Overview */}
               <div className="ai-section">
                 <span className="ai-section-title">
-                  AI Summary
+                  Summary
                   {!data.ai_available && (
-                    <span className="ai-fallback-badge">deterministic fallback</span>
+                    <span className="ai-fallback-badge">offline mode</span>
                   )}
                 </span>
                 <p className="ai-overview">{data.overview}</p>
@@ -101,7 +101,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
               {/* Indicator notes */}
               {data.indicator_notes?.length > 0 && (
                 <div className="ai-section">
-                  <span className="ai-section-title">Indicator Breakdown</span>
+                  <span className="ai-section-title">What was detected</span>
                   <ul className="ai-list ai-list--notes">
                     {data.indicator_notes.map((note, i) => (
                       <li key={i}>{note}</li>
@@ -113,7 +113,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
               {/* Recommendations */}
               {data.recommendations?.length > 0 && (
                 <div className="ai-section">
-                  <span className="ai-section-title">AI Recommendations</span>
+                  <span className="ai-section-title">Recommendations</span>
                   <ul className="ai-list ai-list--recs">
                     {data.recommendations.map((rec, i) => (
                       <li key={i}>{rec}</li>
