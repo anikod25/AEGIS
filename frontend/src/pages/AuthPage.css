@@ -9,11 +9,12 @@
 
 .auth-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 40px 36px;
+  padding: 32px;
+  margin: 0 auto;
 }
 
 .auth-brand {
@@ -74,17 +75,17 @@
 .auth-input {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--text-primary);
   font-size: 14px;
-  padding: 10px 12px;
-  outline: none;
+  padding: 9px 12px;
   transition: border-color 0.15s;
   width: 100%;
 }
 
 .auth-input:focus {
   border-color: var(--accent);
+  outline: none;
 }
 
 .auth-input::placeholder {

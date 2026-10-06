@@ -6,10 +6,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+
+.action-card {
   transition: border-color 0.2s;
 }
 
-.card:hover { border-color: var(--accent); }
+.action-card:hover { border-color: var(--accent); }
 
 .card--success { border-top: 3px solid var(--success); }
 .card--danger  { border-top: 3px solid var(--danger); }
