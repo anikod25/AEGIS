@@ -100,12 +100,12 @@ graph TD
     Browser["Browser (React SPA)"]
 
     subgraph Docker["Docker Compose stack"]
-        Gateway["Nginx gateway\nport 80"]
-        Backend["FastAPI backend\nport 8000 (internal)"]
-        DB["MySQL 8.0\nport 3306 (internal)"]
+        Gateway["Nginx gateway (port 80)"]
+        Backend["FastAPI backend (port 8000, internal)"]
+        DB["MySQL 8.0 (port 3306, internal)"]
     end
 
-    Gemini["Google Gemini API\n(external)"]
+    Gemini["Google Gemini API (external)"]
 
     Browser -->|"HTTP /api/*"| Gateway
     Browser -->|"HTTP / (static)"| Gateway
