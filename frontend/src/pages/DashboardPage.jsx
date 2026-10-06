@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import DashboardCard from '../components/DashboardCard'
+import Icon from '../components/Icon'
 import { useDashboard } from '../hooks/useDashboard'
 import { mockQuickActions } from '../data/mockData'
 import './DashboardPage.css'
@@ -129,7 +130,7 @@ export default function DashboardPage() {
         </div>
         {!loading && (
           <button className="dashboard-refresh-btn" onClick={handleRetry} title="Refresh dashboard">
-            ↻ Refresh
+            <Icon name="refresh" size={14} /> Refresh
           </button>
         )}
       </div>
@@ -137,9 +138,9 @@ export default function DashboardPage() {
       {/* Fatal error — first load failed, no prior data to show */}
       {error && summary === null && (
         <div className="dashboard-fatal-error">
-          <span className="dashboard-fatal-error__icon">⚠️</span>
-          <h2>Failed to load dashboard</h2>
-          <p>{error}</p>
+          <Icon name="alert" size={32} />
+          <h2>Dashboard unavailable</h2>
+          <p>Could not load your dashboard data. Check your connection and try again.</p>
           <button className="btn btn-primary" onClick={refresh}>Retry</button>
         </div>
       )}
@@ -150,8 +151,8 @@ export default function DashboardPage() {
         <DashboardCard
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
-          subtitle={loading ? 'Loading…' : `Status: ${label}`}
-          icon="🛡"
+          subtitle={loading ? 'Loading…' : score === null ? 'Run your first scan to see a score' : `Status: ${label}`}
+          icon={<Icon name="shield" size={16} />}
           accent={loading ? 'default' : accent}
         >
           <div className="score-bar-track">
@@ -166,37 +167,37 @@ export default function DashboardPage() {
           title="Total Scans"
           value={loading ? '…' : total}
           subtitle={loading ? 'Loading…' : total === 0 ? 'Start scanning' : weekCount > 0 ? `+${weekCount} this week` : '0 this week'}
-          icon="📊"
+          icon={<Icon name="scan" size={16} />}
           accent="info"
         />
 
         <DashboardCard
-          title="High Risk"
+          title="High Risk Findings"
           value={loading ? '…' : (stats?.critical ?? 0) + (stats?.high ?? 0)}
           subtitle={
             loading ? 'Loading…'
             : `${stats?.critical ?? 0} critical · ${stats?.high ?? 0} high`
           }
-          icon="⚠"
+          icon={<Icon name="alert" size={16} />}
           accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) === 0 ? 'success' : 'danger'}
         />
 
         <DashboardCard
-          title="Medium / Low"
+          title="Other Findings"
           value={loading ? '…' : (stats?.medium ?? 0) + (stats?.low ?? 0)}
           subtitle={
             loading ? 'Loading…'
             : `${stats?.medium ?? 0} medium · ${stats?.low ?? 0} low`
           }
-          icon="🔶"
+          icon={<Icon name="info" size={16} />}
           accent={!loading && (stats?.medium ?? 0) > 0 ? 'warning' : 'default'}
         />
 
         <DashboardCard
-          title="Safe Results"
+          title="Clean Results"
           value={loading ? '…' : stats?.safe ?? 0}
           subtitle={loading ? 'Loading…' : 'No threats detected'}
-          icon="✅"
+          icon={<Icon name="check" size={16} />}
           accent="success"
         />
       </section>
@@ -215,9 +216,9 @@ export default function DashboardPage() {
       {/* Empty state — no scans yet */}
       {!loading && total === 0 && summary !== null && !(error && summary === null) && (
         <div className="dashboard-empty-state">
-          <span className="dashboard-empty-icon">🔍</span>
-          <p>No security scans yet.</p>
-          <p>Use <strong>Quick Analysis</strong> below to run your first scan.</p>
+          <Icon name="search" size={32} />
+          <p>No scans on record yet.</p>
+          <p>Use the tools below to analyse a URL, email, or password.</p>
         </div>
       )}
 
@@ -225,13 +226,13 @@ export default function DashboardPage() {
       {!(error && summary === null) && (
       <section className={`dashboard-grid${loading ? ' dashboard-loading-overlay' : ''}`}>
         {/* Threat summary card */}
-        <DashboardCard title="Threat Summary" icon="◆">
+        <DashboardCard title="Threat Summary" icon={<Icon name="chart" size={16} />}>
           {loading ? (
             <div className="dashboard-skeleton-rows">
               {[1,2,3,4].map(i => <div key={i} className="dashboard-skeleton-row" />)}
             </div>
           ) : total === 0 ? (
-            <p className="dashboard-empty-hint">Run a scan to see your threat breakdown.</p>
+            <p className="dashboard-empty-hint">Complete a scan to see your threat breakdown.</p>
           ) : (
             <div className="threat-breakdown">
               <ThreatRow label="Critical" count={stats.critical} total={total} color="var(--danger)" />
@@ -244,13 +245,13 @@ export default function DashboardPage() {
         </DashboardCard>
 
         {/* Recent scans card */}
-        <DashboardCard title="Recent Scans" icon="◆">
+        <DashboardCard title="Recent Scans" icon={<Icon name="clock" size={16} />}>
           {loading ? (
             <div className="dashboard-skeleton-rows">
               {[1,2,3,4,5].map(i => <div key={i} className="dashboard-skeleton-row" />)}
             </div>
           ) : !summary?.recent_scans?.length ? (
-            <p className="dashboard-empty-hint">No scans yet. Try analyzing a URL or email.</p>
+            <p className="dashboard-empty-hint">Your recent scans will appear here.</p>
           ) : (
             <>
               {summary.scans_by_type && (
@@ -298,7 +299,7 @@ export default function DashboardPage() {
 
       {/* Quick actions — static navigation, no API data needed */}
       <section className="dashboard-actions">
-        <h2 className="section-heading">Quick Analysis</h2>
+        <h2 className="section-heading">Run an Analysis</h2>
         <div className="action-grid">
           {mockQuickActions.map((action) => (
             <button
@@ -306,7 +307,7 @@ export default function DashboardPage() {
               className="action-card"
               onClick={() => navigate(action.path)}
             >
-              <span className="action-icon">{action.icon}</span>
+              <span className="action-icon"><Icon name={action.iconName} size={16} /></span>
               <span className="action-label">{action.label}</span>
               <span className="action-desc">{action.description}</span>
             </button>

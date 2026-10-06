@@ -123,13 +123,13 @@
 .action-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px 16px;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 16px 20px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  text-align: center;
+  text-align: left;
   transition: border-color 0.2s, background 0.2s;
 }
 
@@ -139,7 +139,12 @@
 }
 
 .action-icon {
-  font-size: 28px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
 }
 
 .action-label {
@@ -162,6 +167,27 @@
 @media (max-width: 768px) {
   .dashboard-grid { grid-template-columns: 1fr; }
   .dashboard-metrics { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scan-item {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  /* Row 1: badge + result label; Row 2: target + time */
+  .scan-badge  { grid-column: 1; grid-row: 1; }
+  .scan-result { grid-column: 2; grid-row: 1; }
+  .scan-target { grid-column: 1 / -1; grid-row: 2; }
+  .scan-time   { grid-column: 1 / -1; grid-row: 3; }
 }
 
 /* ---- Error banner ---- */
@@ -283,9 +309,9 @@
 /* ---- Security score progress bar ---- */
 .score-bar-track {
   width: 100%;
-  height: 8px;
+  height: 4px;
   background: var(--bg-elevated);
-  border-radius: 4px;
+  border-radius: 2px;
   margin-top: 10px;
   overflow: hidden;
 }
@@ -293,7 +319,7 @@
 .score-bar-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 0.4s ease, background 0.4s ease;
+  transition: width 0.3s ease, background 0.3s ease;
 }
 
 .scan-item--clickable {
@@ -328,7 +354,9 @@
 }
 
 .dashboard-empty-icon {
-  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
   margin-bottom: 12px;
 }
 
@@ -348,6 +376,8 @@
 }
 
 .dashboard-fatal-error__icon {
-  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  color: var(--danger);
   margin-bottom: 16px;
 }

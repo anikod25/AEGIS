@@ -65,7 +65,7 @@ export default function UrlAnalysisPage() {
           Scan a URL for phishing indicators, suspicious patterns, and structural anomalies.
         </p>
         <p className="url-caveat">
-          Heuristic analysis of the URL string only. It cannot see page content, domain age or reputation.
+          Analyses the URL structure only — not page content, domain age, or reputation.
         </p>
       </div>
 
@@ -109,14 +109,14 @@ export default function UrlAnalysisPage() {
           {/* Defanged normalized URL */}
           <div className="url-normalized">
             <div className="url-normalized-top">
-              <span className="url-normalized-label">Normalised URL</span>
+              <span className="url-normalized-label">Scanned URL</span>
               <button
                 className="url-raw-toggle"
                 type="button"
                 onClick={() => setShowRaw(r => !r)}
                 aria-pressed={showRaw}
               >
-                {showRaw ? 'Hide raw' : 'Show raw'}
+                {showRaw ? 'Hide original' : 'Show original'}
               </button>
             </div>
             <span className="url-normalized-value">
@@ -127,7 +127,7 @@ export default function UrlAnalysisPage() {
           {/* Indicators — sorted by severity then weight */}
           {result.indicators.length > 0 ? (
             <div className="url-section">
-              <h3 className="url-section-title">Detected Indicators</h3>
+              <h3 className="url-section-title">What we found</h3>
               <div className="url-indicators">
                 {result.indicators.map((ind, i) => (
                   <div key={i} className="url-indicator">
@@ -142,9 +142,6 @@ export default function UrlAnalysisPage() {
                         {ind.severity}
                       </span>
                       <span className="url-indicator-name">{ind.name}</span>
-                      {ind.weight != null && (
-                        <span className="url-indicator-weight">w={ind.weight}</span>
-                      )}
                     </div>
                     <p className="url-indicator-detail">{ind.detail}</p>
                   </div>
@@ -161,16 +158,10 @@ export default function UrlAnalysisPage() {
           {/* Recommendations */}
           {result.recommendations.length > 0 && (
             <div className="url-section">
-              <h3 className="url-section-title url-section-title--info">Recommendations</h3>
+              <h3 className="url-section-title url-section-title--info">What to do</h3>
               <ul className="url-recs">
                 {result.recommendations.map((r, i) => <li key={i}>{r}</li>)}
               </ul>
-            </div>
-          )}
-
-          {result.analysis_version && (
-            <div className="url-footer">
-              Analysis engine: {result.analysis_version}
             </div>
           )}
         </div>

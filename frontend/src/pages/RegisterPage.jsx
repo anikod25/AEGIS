@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { auth as authApi } from '../services/api'
+import Icon from '../components/Icon'
 import './AuthPage.css'
 
 export default function RegisterPage() {
@@ -40,7 +41,7 @@ export default function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-brand">
-          <span className="auth-brand-icon">⬡</span>
+          <span className="auth-brand-icon"><Icon name="shield" size={24} /></span>
           <span className="auth-brand-name">AEGIS</span>
         </div>
 
