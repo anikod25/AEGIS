@@ -164,6 +164,27 @@
   .dashboard-metrics { grid-template-columns: 1fr 1fr; }
 }
 
+@media (max-width: 480px) {
+  .dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scan-item {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  /* Row 1: badge + result label; Row 2: target + time */
+  .scan-badge  { grid-column: 1; grid-row: 1; }
+  .scan-result { grid-column: 2; grid-row: 1; }
+  .scan-target { grid-column: 1 / -1; grid-row: 2; }
+  .scan-time   { grid-column: 1 / -1; grid-row: 3; }
+}
+
 /* ---- Error banner ---- */
 .dashboard-error {
   display: flex;

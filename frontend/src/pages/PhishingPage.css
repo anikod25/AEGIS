@@ -90,6 +90,7 @@
   border-radius: var(--radius-sm);
   white-space: nowrap;
   transition: background 0.15s, opacity 0.15s;
+  min-height: 44px;
 }
 .ph-btn:hover:not(:disabled) { background: var(--accent-hover); }
 .ph-btn:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -248,4 +249,30 @@
   border-top: 1px solid var(--border);
   font-size: 11px;
   color: var(--text-muted);
+}
+
+/* ================================================================
+   Responsive
+   ================================================================ */
+@media (max-width: 768px) {
+  .ph-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ph-input,
+  .ph-textarea {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .ph-result-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ph-scan-meta {
+    align-items: flex-start;
+  }
 }

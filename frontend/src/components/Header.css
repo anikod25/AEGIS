@@ -13,6 +13,13 @@
   z-index: 99;
 }
 
+@media (max-width: 768px) {
+  .header {
+    left: 0;
+    padding-left: 56px; /* leave room for hamburger button */
+  }
+}
+
 .header-title {
   font-size: 16px;
   font-weight: 600;
