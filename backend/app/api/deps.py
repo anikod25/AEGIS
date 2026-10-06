@@ -36,7 +36,7 @@ def get_current_user(
 
     user = db.get(User, int(user_id))
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+        raise credentials_exception
     return user
 
 

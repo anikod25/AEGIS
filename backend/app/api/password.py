@@ -28,6 +28,7 @@ def analyse_password(
       recommendations.
     - Requires a valid Bearer token.
     """
+    # Intentionally no logging of password value — not stored or forwarded.
     result = analyse(payload.password)
     # payload.password goes out of scope here — not persisted anywhere
     return result

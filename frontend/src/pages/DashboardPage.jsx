@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardCard from '../components/DashboardCard'
-import { dashboard } from '../services/api'
+import { useDashboard } from '../hooks/useDashboard'
 import { mockQuickActions } from '../data/mockData'
 import './DashboardPage.css'
 
@@ -34,6 +33,14 @@ function scoreAccent(score) {
   return 'danger'
 }
 
+function scoreColor(score) {
+  if (score === null) return 'var(--text-muted, #888)'
+  if (score >= 80)   return 'var(--success)'
+  if (score >= 60)   return 'var(--warning)'
+  if (score >= 40)   return 'var(--danger)'
+  return 'var(--danger)'
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -58,6 +65,8 @@ const TYPE_LABEL = {
   phishing: 'Email',
   password: 'Password',
 }
+
+const TYPE_PATH = { url: '/url', phishing: '/phishing', password: '/password' }
 
 function timeAgo(isoString) {
   const diff = Math.floor((Date.now() - new Date(isoString)) / 1000)
@@ -90,37 +99,18 @@ function ThreatRow({ label, count, total, color }) {
 
 export default function DashboardPage() {
   const navigate = useNavigate()
-  const [summary,  setSummary]  = useState(null)
-  const [loading,  setLoading]  = useState(true)
-  const [apiError, setApiError] = useState(null)
+  const { summary, loading, error, refresh } = useDashboard()
 
-  useEffect(() => {
-    setLoading(true)
-    setApiError(null)
-    dashboard.getSummary()
-      .then(data => {
-        setSummary(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setApiError(err.message ?? 'Failed to load dashboard data.')
-        setLoading(false)
-      })
-  }, [])
-
-  const stats   = summary?.threat_stats  ?? null
-  const score   = computeSecurityScore(stats)
-  const label   = scoreLabel(score)
-  const accent  = scoreAccent(score)
+  const stats      = summary?.threat_stats  ?? null
+  const score      = computeSecurityScore(stats)
+  const label      = scoreLabel(score)
+  const accent     = scoreAccent(score)
+  const scoreColorVal = scoreColor(score)
   const total   = stats?.total ?? 0
   const weekCount = summary?.scans_this_week ?? 0
 
   function handleRetry() {
-    setLoading(true)
-    setApiError(null)
-    dashboard.getSummary()
-      .then(data => { setSummary(data); setLoading(false) })
-      .catch(err => { setApiError(err.message ?? 'Failed to load.'); setLoading(false) })
+    refresh()
   }
 
   return (
@@ -144,21 +134,39 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Top metric cards */}
-      <section className="dashboard-metrics">
+      {/* Fatal error — first load failed, no prior data to show */}
+      {error && summary === null && (
+        <div className="dashboard-fatal-error">
+          <span className="dashboard-fatal-error__icon">⚠️</span>
+          <h2>Failed to load dashboard</h2>
+          <p>{error}</p>
+          <button className="btn btn-primary" onClick={refresh}>Retry</button>
+        </div>
+      )}
+
+      {/* Top metric cards — hidden when fatal error */}
+      {!(error && summary === null) && (
+      <section className="dashboard-metrics" aria-busy={loading ? 'true' : undefined}>
         <DashboardCard
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
           subtitle={loading ? 'Loading…' : `Status: ${label}`}
-          icon="◆"
+          icon="🛡"
           accent={loading ? 'default' : accent}
-        />
+        >
+          <div className="score-bar-track">
+            <div
+              className="score-bar-fill"
+              style={{ width: `${score ?? 0}%`, background: scoreColorVal }}
+            />
+          </div>
+        </DashboardCard>
 
         <DashboardCard
           title="Total Scans"
           value={loading ? '…' : total}
-          subtitle={loading ? 'Loading…' : weekCount > 0 ? `+${weekCount} this week` : 'No scans this week'}
-          icon="◆"
+          subtitle={loading ? 'Loading…' : total === 0 ? 'Start scanning' : weekCount > 0 ? `+${weekCount} this week` : '0 this week'}
+          icon="📊"
           accent="info"
         />
 
@@ -169,8 +177,8 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.critical ?? 0} critical · ${stats?.high ?? 0} high`
           }
-          icon="◆"
-          accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) > 0 ? 'danger' : 'warning'}
+          icon="⚠"
+          accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) === 0 ? 'success' : 'danger'}
         />
 
         <DashboardCard
@@ -180,7 +188,7 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.medium ?? 0} medium · ${stats?.low ?? 0} low`
           }
-          icon="◆"
+          icon="🔶"
           accent={!loading && (stats?.medium ?? 0) > 0 ? 'warning' : 'default'}
         />
 
@@ -188,23 +196,34 @@ export default function DashboardPage() {
           title="Safe Results"
           value={loading ? '…' : stats?.safe ?? 0}
           subtitle={loading ? 'Loading…' : 'No threats detected'}
-          icon="◆"
+          icon="✅"
           accent="success"
         />
       </section>
+      )}
 
-      {/* Error banner */}
-      {apiError && !loading && (
+      {/* Error banner — inline refresh-failed banner (only when we already have prior data) */}
+      {error && !loading && summary !== null && (
         <div className="dashboard-error" role="alert">
-          <span>{apiError}</span>
+          <span>{error}</span>
           <button className="dashboard-error-retry" onClick={handleRetry}>
             Retry
           </button>
         </div>
       )}
 
-      {/* Threat breakdown + recent scans */}
-      <section className="dashboard-grid">
+      {/* Empty state — no scans yet */}
+      {!loading && total === 0 && summary !== null && !(error && summary === null) && (
+        <div className="dashboard-empty-state">
+          <span className="dashboard-empty-icon">🔍</span>
+          <p>No security scans yet.</p>
+          <p>Use <strong>Quick Analysis</strong> below to run your first scan.</p>
+        </div>
+      )}
+
+      {/* Threat breakdown + recent scans — hidden when fatal error */}
+      {!(error && summary === null) && (
+      <section className={`dashboard-grid${loading ? ' dashboard-loading-overlay' : ''}`}>
         {/* Threat summary card */}
         <DashboardCard title="Threat Summary" icon="◆">
           {loading ? (
@@ -249,15 +268,22 @@ export default function DashboardPage() {
                 {summary.recent_scans.map((scan) => {
                   const sev = SEVERITY_MAP[scan.risk_level] ?? 'info'
                   return (
-                    <li key={scan.id} className="scan-item">
+                    <li
+                      key={scan.id}
+                      className="scan-item scan-item--clickable"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(TYPE_PATH[scan.scan_type] ?? '/')}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(TYPE_PATH[scan.scan_type] ?? '/') }}
+                    >
                       <span className={`scan-badge scan-badge--${sev}`}>
                         {TYPE_LABEL[scan.scan_type] ?? scan.scan_type}
                       </span>
                       <span className="scan-target" title={scan.target}>
-                        {scan.target}
+                        {scan.target.length > 40 ? scan.target.slice(0, 40) + '…' : scan.target}
                       </span>
                       <span className={`scan-result scan-result--${sev}`}>
-                        {RISK_LABEL[scan.risk_level] ?? scan.risk_level}
+                        {RISK_LABEL[scan.risk_level] ?? scan.risk_level}{scan.risk_score != null ? ` (${scan.risk_score})` : ''}
                       </span>
                       <span className="scan-time">{timeAgo(scan.scanned_at)}</span>
                     </li>
@@ -268,6 +294,7 @@ export default function DashboardPage() {
           )}
         </DashboardCard>
       </section>
+      )}
 
       {/* Quick actions — static navigation, no API data needed */}
       <section className="dashboard-actions">

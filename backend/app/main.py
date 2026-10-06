@@ -2,8 +2,9 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from backend.app.api.ai import router as ai_router
 from backend.app.api.assistant import router as assistant_router
@@ -33,7 +34,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",   # Vite dev server
+        "http://127.0.0.1:5173",
+        "http://localhost:80",
+        "http://localhost",        # Nginx gateway
+        "http://gateway",          # inter-container
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,3 +58,12 @@ app.include_router(assistant_router, prefix="/api")
 @app.get("/health", tags=["health"])
 def health() -> dict:
     return {"status": "ok", "env": settings.APP_ENV}
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    # Do not log exc details to the response — stack traces must not reach the client
+    return JSONResponse(status_code=500, content={"detail": "An internal error occurred."})
+
+# Note: FastAPI's default RequestValidationError handler returns 422 with field paths,
+# which is acceptable for API clients. No override needed.

@@ -108,6 +108,7 @@ def explain(
     if not gemini_svc.is_available():
         return _fallback(payload)
 
+    # context_fields values are user-supplied — intentionally not included in log output.
     prompt = build_prompt(payload)
     raw_response, _err = gemini_svc.generate(prompt)
 

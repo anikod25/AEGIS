@@ -92,6 +92,7 @@ def _get_client() -> Any | None:
                 http_client = httpx.Client(verify=ctx, timeout=_TIMEOUT_SECONDS)
             except Exception:
                 # Fallback: disable SSL verification (network with self-signed proxy)
+                logger.warning("TLS verification disabled for Gemini HTTP client — all Gemini responses are untrusted")
                 http_client = httpx.Client(verify=False, timeout=_TIMEOUT_SECONDS)
 
             _client = genai.Client(
@@ -101,6 +102,8 @@ def _get_client() -> Any | None:
             logger.info("Gemini client initialised (model=%s)", _MODEL)
         except Exception as exc:
             _client_error = str(exc)
+            if settings.GEMINI_API_KEY:
+                _client_error = _client_error.replace(settings.GEMINI_API_KEY, "[REDACTED]")
             logger.warning("Gemini client init failed: %s", exc)
 
     return _client
@@ -180,7 +183,8 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
                 import time as _time
                 _time.sleep(2)
                 continue
-            logger.warning("Gemini request failed: %s", exc)
+            safe_err = str(exc).replace(settings.GEMINI_API_KEY, "[REDACTED]") if settings.GEMINI_API_KEY else str(exc)
+            logger.warning("Gemini request failed: %s", safe_err)
             return None, GeminiError.API_ERROR
 
         # No exception — check for empty response
