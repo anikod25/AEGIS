@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Icon from '../components/Icon'
 import './Header.css'
 
 export default function Header({ title }) {
@@ -34,7 +35,7 @@ export default function Header({ title }) {
           </div>
           <div className="user-avatar" title={displayName}>{initials}</div>
           <button className="logout-btn" onClick={handleLogout} title="Sign out">
-            ⏻
+            <Icon name="power" size={14} />
           </button>
         </div>
       </div>

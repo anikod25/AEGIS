@@ -9,6 +9,7 @@
  * component knows nothing about scan types or raw data.
  */
 import { useState, useEffect, useRef } from 'react'
+import Icon from '../components/Icon'
 import './AiExplanation.css'
 
 export default function AiExplanation({ fetchFn, resetKey }) {
@@ -66,7 +67,7 @@ export default function AiExplanation({ fetchFn, resetKey }) {
           <span className="ai-trigger-status">{statusLabel}</span>
         )}
         <span className={`ai-trigger-caret${open ? ' ai-trigger-caret--open' : ''}`}>
-          ▾
+          <Icon name="chevron-down" size={14} />
         </span>
       </button>
 

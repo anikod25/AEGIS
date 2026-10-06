@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import DashboardCard from '../components/DashboardCard'
+import Icon from '../components/Icon'
 import { useDashboard } from '../hooks/useDashboard'
 import { mockQuickActions } from '../data/mockData'
 import './DashboardPage.css'
@@ -129,7 +130,7 @@ export default function DashboardPage() {
         </div>
         {!loading && (
           <button className="dashboard-refresh-btn" onClick={handleRetry} title="Refresh dashboard">
-            ↻ Refresh
+            <Icon name="refresh" size={14} /> Refresh
           </button>
         )}
       </div>
@@ -137,7 +138,7 @@ export default function DashboardPage() {
       {/* Fatal error — first load failed, no prior data to show */}
       {error && summary === null && (
         <div className="dashboard-fatal-error">
-          <span className="dashboard-fatal-error__icon">⚠️</span>
+          <Icon name="alert" size={32} />
           <h2>Failed to load dashboard</h2>
           <p>{error}</p>
           <button className="btn btn-primary" onClick={refresh}>Retry</button>
@@ -151,7 +152,7 @@ export default function DashboardPage() {
           title="Security Score"
           value={loading ? '…' : score !== null ? `${score}/100` : 'N/A'}
           subtitle={loading ? 'Loading…' : `Status: ${label}`}
-          icon="🛡"
+          icon={<Icon name="shield" size={16} />}
           accent={loading ? 'default' : accent}
         >
           <div className="score-bar-track">
@@ -166,7 +167,7 @@ export default function DashboardPage() {
           title="Total Scans"
           value={loading ? '…' : total}
           subtitle={loading ? 'Loading…' : total === 0 ? 'Start scanning' : weekCount > 0 ? `+${weekCount} this week` : '0 this week'}
-          icon="📊"
+          icon={<Icon name="scan" size={16} />}
           accent="info"
         />
 
@@ -177,7 +178,7 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.critical ?? 0} critical · ${stats?.high ?? 0} high`
           }
-          icon="⚠"
+          icon={<Icon name="alert" size={16} />}
           accent={!loading && ((stats?.critical ?? 0) + (stats?.high ?? 0)) === 0 ? 'success' : 'danger'}
         />
 
@@ -188,7 +189,7 @@ export default function DashboardPage() {
             loading ? 'Loading…'
             : `${stats?.medium ?? 0} medium · ${stats?.low ?? 0} low`
           }
-          icon="🔶"
+          icon={<Icon name="info" size={16} />}
           accent={!loading && (stats?.medium ?? 0) > 0 ? 'warning' : 'default'}
         />
 
@@ -196,7 +197,7 @@ export default function DashboardPage() {
           title="Safe Results"
           value={loading ? '…' : stats?.safe ?? 0}
           subtitle={loading ? 'Loading…' : 'No threats detected'}
-          icon="✅"
+          icon={<Icon name="check" size={16} />}
           accent="success"
         />
       </section>
@@ -215,7 +216,7 @@ export default function DashboardPage() {
       {/* Empty state — no scans yet */}
       {!loading && total === 0 && summary !== null && !(error && summary === null) && (
         <div className="dashboard-empty-state">
-          <span className="dashboard-empty-icon">🔍</span>
+          <Icon name="search" size={32} />
           <p>No security scans yet.</p>
           <p>Use <strong>Quick Analysis</strong> below to run your first scan.</p>
         </div>
@@ -225,7 +226,7 @@ export default function DashboardPage() {
       {!(error && summary === null) && (
       <section className={`dashboard-grid${loading ? ' dashboard-loading-overlay' : ''}`}>
         {/* Threat summary card */}
-        <DashboardCard title="Threat Summary" icon="◆">
+        <DashboardCard title="Threat Summary" icon={<Icon name="chart" size={16} />}>
           {loading ? (
             <div className="dashboard-skeleton-rows">
               {[1,2,3,4].map(i => <div key={i} className="dashboard-skeleton-row" />)}
@@ -244,7 +245,7 @@ export default function DashboardPage() {
         </DashboardCard>
 
         {/* Recent scans card */}
-        <DashboardCard title="Recent Scans" icon="◆">
+        <DashboardCard title="Recent Scans" icon={<Icon name="clock" size={16} />}>
           {loading ? (
             <div className="dashboard-skeleton-rows">
               {[1,2,3,4,5].map(i => <div key={i} className="dashboard-skeleton-row" />)}
@@ -306,7 +307,7 @@ export default function DashboardPage() {
               className="action-card"
               onClick={() => navigate(action.path)}
             >
-              <span className="action-icon">{action.icon}</span>
+              <span className="action-icon"><Icon name={action.iconName} size={16} /></span>
               <span className="action-label">{action.label}</span>
               <span className="action-desc">{action.description}</span>
             </button>
