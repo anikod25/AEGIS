@@ -1,99 +1,102 @@
+<div align="center">
+
 # AEGIS
 
-AEGIS is a personal cybersecurity dashboard that consolidates common security analysis tasks into a single authenticated web application. It provides deterministic analysis of URLs, emails, and passwords, an AI-powered security assistant backed by Google Gemini, and a dashboard that tracks results over time.
+**A personal cybersecurity dashboard for analysing URLs, emails, and passwords — in one authenticated place.**
 
-The project was built as a semester capstone by a three-person team. It is not intended for production deployment in its current form, but it demonstrates a complete full-stack implementation with a security-conscious design.
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
----
+[Features](#key-features) · [Architecture](#system-architecture) · [Setup](#developer-setup) · [API](#api-overview) · [Security](#security-considerations) · [Roadmap](#future-scope)
 
-## Table of Contents
-
-- [Why AEGIS](#why-aegis)
-- [Key Features](#key-features)
-- [System Architecture](#system-architecture)
-- [Project Structure](#project-structure)
-- [Developer Setup](#developer-setup)
-- [API Overview](#api-overview)
-- [Security Considerations](#security-considerations)
-- [Testing](#testing)
-- [Development Workflow](#development-workflow)
-- [Future Scope](#future-scope)
-- [Contributors](#contributors)
-- [License](#license)
+</div>
 
 ---
+
+## Overview
+
+AEGIS consolidates common security analysis tasks into a single web application. It provides deterministic analysis of URLs, emails, and passwords, an AI-powered security assistant backed by Google Gemini, and a dashboard that tracks results over time.
+
+Built as a semester capstone by a three-person team, AEGIS demonstrates a complete full-stack implementation with a security-conscious design. It is not intended for production deployment in its current form.
 
 ## Why AEGIS
 
-Most individuals encounter phishing links, suspicious emails, and weak passwords regularly, but have no single tool to inspect them quickly without relying on disconnected online scanners that may log submitted data. AEGIS provides:
+Most people run into phishing links, suspicious emails, and weak passwords regularly, yet have no single tool to inspect them without relying on disconnected online scanners that may log submitted data. AEGIS offers:
 
-- A self-hosted dashboard with no third-party data sharing for core analysis
-- Deterministic, rule-based analysis that does not depend on external threat databases
-- An AI assistant for plain-English explanations of results, without sending raw passwords or email bodies to the AI
-- A persistent scan history tied to an authenticated user account
+- **Self-hosted analysis** — no third-party data sharing for core features
+- **Deterministic, rule-based detection** — no dependence on external threat databases
+- **Plain-English AI explanations** — raw passwords and email bodies are never sent to the AI
+- **Persistent scan history** — tied to an authenticated user account
 
 ---
 
 ## Key Features
 
-### Implemented
+| Feature | Status | Summary |
+|---------|:------:|---------|
+| [Authentication](#authentication) | Implemented | Registration, login, JWT sessions, role-based access |
+| [Security Dashboard](#security-dashboard) | Implemented | Security score, threat breakdown, recent scans |
+| [URL Analysis](#url-analysis) | Implemented | Structural analysis with weighted indicator scoring |
+| [Email / Phishing Analysis](#email--phishing-analysis) | Implemented | Sender, content, link, and attachment checks |
+| [Password Analysis](#password-analysis) | Implemented | Entropy, character classes, pattern detection |
+| [AI Security Assistant](#ai-security-assistant) | Implemented | Context-aware chat powered by Google Gemini |
+| [AI Explanation Panel](#ai-explanation-panel) | Implemented | Structured explanations of scan evidence |
+| Scan History | Planned | UI stub only |
+| Reports | Planned | UI stub only |
 
-**Authentication**
-- User registration and login with bcrypt password hashing
-- JWT-based session management (Bearer token, configurable expiry)
+### Authentication
+- Registration and login with bcrypt password hashing
+- JWT-based sessions (Bearer token, configurable expiry)
 - Role-based model (`user` / `admin`) with protected routes
-- Per-request authorization; users can only access their own data
+- Per-request authorisation — users can only access their own data
 
-**Security Dashboard**
+### Security Dashboard
 - Real-time summary of all scans for the authenticated user
 - Computed security score based on threat distribution
-- Threat breakdown by severity (critical, high, medium, low, safe)
+- Threat breakdown by severity: critical, high, medium, low, safe
 - Recent scan list with risk level and type
-- Scan counts by type and scans-this-week metric
+- Scan counts by type and a scans-this-week metric
 
-**URL Analysis**
-- Deterministic structural analysis of URLs (no external lookups)
-- Detects: brand impersonation, IP-based addresses, obfuscated IPs, risky TLDs, excessive subdomains, deceptive userinfo, open redirects, homograph/punycode labels, excessive percent-encoding, suspicious keywords
+### URL Analysis
+- Deterministic structural analysis with no external lookups
+- Detects brand impersonation, IP-based and obfuscated addresses, risky TLDs, excessive subdomains, deceptive userinfo, open redirects, homograph/punycode labels, excessive percent-encoding, and suspicious keywords
 - Per-indicator severity ratings with weighted scoring
-- Results stored as scan records linked to the authenticated user
+- Results stored as scan records linked to the user
 
-**Email / Phishing Analysis**
+### Email / Phishing Analysis
 - Analyses sender, reply-to, subject, body, links, and attachment names
-- Detects: sender/reply-to domain mismatch, urgency and threat language, credential and payment requests, executable and macro attachments, URL shorteners, impersonation keywords, prize scam patterns, generic greetings
-- Email body is never stored or forwarded to any external service
-- Results stored with subject as the scan target (body excluded)
+- Detects sender/reply-to domain mismatch, urgency and threat language, credential and payment requests, executable and macro attachments, URL shorteners, impersonation keywords, prize-scam patterns, and generic greetings
+- The email body is **never stored or forwarded** to any external service
+- Results are stored with the subject as the scan target (body excluded)
 
-**Password Analysis**
-- Entropy calculation, character class breakdown, pattern detection
-- Strength levels: very weak, weak, moderate, strong, very strong
-- Password is never stored, logged, or sent to Gemini or any external service
-- No scan record created (stateless by design)
+### Password Analysis
+- Entropy calculation, character class breakdown, and pattern detection
+- Five strength levels: very weak, weak, moderate, strong, very strong
+- The password is **never stored, logged, or sent** to Gemini or any external service
+- Stateless by design — no scan record is created
 
-**AI Security Assistant**
+### AI Security Assistant
 - Conversational interface backed by Google Gemini
-- Context-aware: can receive safe scan metadata to give result-specific guidance
+- Context-aware: accepts safe scan metadata for result-specific guidance
 - Raw passwords and full email bodies are never included in prompts
-- Per-user rate limiting (15 messages / 60 s)
+- Per-user rate limiting (15 messages / 60 s) and a 6-question limit per conversation
 - Graceful fallback when Gemini is unavailable or unconfigured
-- Session limited to 6 questions per conversation
 
-**AI Explanation Panel**
+### AI Explanation Panel
 - Available after URL, email, and password analysis
 - Sends only indicator names, severity levels, and safe metadata to Gemini
-- Returns structured overview, indicator breakdown, and recommendations
+- Returns a structured overview, indicator breakdown, and recommendations
 - Deterministic fallback when AI is unavailable
-
-**Scan History** *(planned — stub page)*
-- UI placeholder exists; full browsable history with filters is not yet implemented
-
-**Reports** *(planned — stub page)*
-- UI placeholder exists; PDF/export generation is not yet implemented
 
 ---
 
 ## System Architecture
 
-AEGIS uses a monolithic FastAPI backend served behind an Nginx API gateway. All service groups (auth, analysis, AI, reports) share one Python process and one database connection pool. This is appropriate for a three-person semester project; splitting into independent services would require duplicating JWT validation, DB session management, and Pydantic models without meaningful benefit at this scale.
+AEGIS uses a monolithic FastAPI backend served behind an Nginx API gateway. All service groups (auth, analysis, AI, reports) share one Python process and one database connection pool. For a three-person semester project this is the pragmatic choice: splitting into independent services would mean duplicating JWT validation, DB session management, and Pydantic models without meaningful benefit at this scale.
 
 ```mermaid
 graph TD
@@ -114,7 +117,7 @@ graph TD
     Backend -->|"HTTPS (google-genai SDK)"| Gemini
 ```
 
-### Routing table
+### Routing
 
 | Path prefix | Handled by | Notes |
 |-------------|-----------|-------|
@@ -127,14 +130,14 @@ graph TD
 | `/health` | Nginx | Gateway liveness |
 | `/` | Nginx static | React SPA |
 
-### Technology stack
+### Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 19, React Router 7, Vite 6 |
 | Backend | Python 3.12, FastAPI 0.115, SQLAlchemy 2, Pydantic 2 |
 | Database | MySQL 8.0 |
-| AI | Google Gemini (via `google-genai` SDK) |
+| AI | Google Gemini (`google-genai` SDK) |
 | Gateway | Nginx 1.27 (Alpine) |
 | Auth | JWT (`python-jose`), bcrypt (`passlib`) |
 | Containerisation | Docker, Docker Compose |
@@ -193,9 +196,7 @@ AEGIS/
 | MySQL | 8.0 | Local install or Docker |
 | Docker + Docker Compose | 24 / 2.20 | Optional — for containerised setup |
 
-A Google Gemini API key is required for AI features. The application runs without one; AI endpoints return deterministic fallback responses instead.
-
----
+> **Note:** A Google Gemini API key is required for AI features. The application runs without one; AI endpoints return deterministic fallback responses instead.
 
 ### 1. Clone the repository
 
@@ -204,19 +205,19 @@ git clone <repository-url>
 cd AEGIS
 ```
 
-### 2. Environment variables
+### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and set the following values. Never commit this file.
+Open `.env` and set the values below. **Never commit this file.**
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | SQLAlchemy connection string. For local dev: `mysql+pymysql://user:password@localhost:3306/aegis` |
+| `DATABASE_URL` | SQLAlchemy connection string. Local dev: `mysql+pymysql://user:password@localhost:3306/aegis` |
 | `JWT_SECRET_KEY` | Random string, minimum 32 characters |
-| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Token lifetime in minutes (default: 480) |
+| `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Token lifetime in minutes (default: `480`) |
 | `GEMINI_API_KEY` | Google Gemini API key. Leave as placeholder to disable AI features |
 | `MYSQL_ROOT_PASSWORD` | Used by Docker Compose to initialise MySQL |
 | `MYSQL_USER` | Application database user |
@@ -224,11 +225,11 @@ Open `.env` and set the following values. Never commit this file.
 | `MYSQL_DATABASE` | Database name (default: `aegis`) |
 | `VITE_API_URL` | Frontend API base URL. Set to `http://localhost:8000/api` for local dev |
 
----
+### 3. Run the application
 
-### Option A: Docker Compose (recommended)
+#### Option A — Docker Compose (recommended)
 
-This runs the complete stack (MySQL, backend, Nginx gateway, React build) with a single command.
+Runs the complete stack (MySQL, backend, Nginx gateway, React build) with two commands.
 
 ```bash
 # 1. Build the React frontend into the shared volume
@@ -238,31 +239,23 @@ docker compose --profile build up --build frontend
 docker compose up --build -d
 ```
 
-The application is available at `http://localhost`.
-
-To stop:
+The application is available at **http://localhost**.
 
 ```bash
+# Stop the stack
 docker compose down
-```
 
-To stop and remove volumes (including the database):
-
-```bash
+# Stop and remove volumes (including the database)
 docker compose down -v
-```
 
-**After code changes:**
-
-```bash
+# Rebuild after code changes
 docker compose up --build -d
 ```
 
----
+#### Option B — Local development (without Docker)
 
-### Option B: Local development (without Docker)
-
-#### Database
+<details>
+<summary><strong>Database</strong></summary>
 
 Create a MySQL database and user:
 
@@ -273,7 +266,7 @@ GRANT ALL PRIVILEGES ON aegis.* TO 'aegis_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Run the schema:
+Load the schema:
 
 ```bash
 mysql -u aegis_user -p aegis < database/schema.sql
@@ -285,7 +278,10 @@ Update `DATABASE_URL` in `.env`:
 DATABASE_URL=mysql+pymysql://aegis_user:your_password@localhost:3306/aegis
 ```
 
-#### Backend
+</details>
+
+<details>
+<summary><strong>Backend</strong></summary>
 
 ```bash
 python -m venv .venv
@@ -301,11 +297,14 @@ pip install -r backend/requirements.txt
 uvicorn backend.app.main:app --reload
 ```
 
-The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
+The API is available at `http://localhost:8000`, with interactive docs at `http://localhost:8000/docs`.
 
-> **Note:** The backend reads `.env` from the repository root automatically via pydantic-settings.
+> The backend reads `.env` from the repository root automatically via pydantic-settings.
 
-#### Frontend
+</details>
+
+<details>
+<summary><strong>Frontend</strong></summary>
 
 ```bash
 cd frontend
@@ -313,28 +312,28 @@ npm install
 npm run dev
 ```
 
-The dev server runs at `http://localhost:5173` by default. Set `VITE_API_URL=http://localhost:8000/api` in `.env` (the frontend Vite config picks this up).
+The dev server runs at `http://localhost:5173` by default. Set `VITE_API_URL=http://localhost:8000/api` in `.env`; the Vite config picks it up.
 
----
+</details>
 
 ### Gemini configuration
 
-Obtain a Gemini API key from [Google AI Studio](https://aistudio.google.com/). Set it in `.env`:
+Obtain a key from [Google AI Studio](https://aistudio.google.com/) and set it in `.env`:
 
 ```
 GEMINI_API_KEY=your_key_here
 ```
 
-If the key is absent or set to the placeholder value, all AI endpoints return structured fallback responses. Core security analysis (URL, email, password) is not affected.
+If the key is absent or left as the placeholder, all AI endpoints return structured fallback responses. Core security analysis (URL, email, password) is unaffected.
 
 ---
 
 ## API Overview
 
-All API routes are prefixed with `/api`. The backend also serves interactive documentation at `/docs` (Swagger UI) and `/redoc`.
+All routes are prefixed with `/api`. Interactive documentation is served at `/docs` (Swagger UI) and `/redoc`.
 
 | Method | Path | Auth | Description |
-|--------|------|------|-------------|
+|--------|------|:---:|-------------|
 | `POST` | `/api/auth/register` | No | Create a new user account |
 | `POST` | `/api/auth/login` | No | Authenticate and receive a JWT |
 | `GET` | `/api/auth/me` | Yes | Return the current user |
@@ -346,7 +345,9 @@ All API routes are prefixed with `/api`. The backend also serves interactive doc
 | `GET` | `/api/v1/assistant/status` | Yes | Check AI assistant availability |
 | `POST` | `/api/v1/assistant/chat` | Yes | Send a message to the AI assistant |
 
-Rate limits are enforced per authenticated user in memory:
+### Rate limits
+
+Limits are enforced per authenticated user, in memory.
 
 | Endpoint group | Limit |
 |---------------|-------|
@@ -361,47 +362,47 @@ Rate limits are enforced per authenticated user in memory:
 
 ## Security Considerations
 
-The following practices are implemented in the current codebase:
+The following practices are implemented in the current codebase.
 
 **Authentication and authorisation**
-- Passwords are hashed with bcrypt before storage; plaintext is never persisted
+- Passwords are hashed with bcrypt; plaintext is never persisted
 - JWTs include `sub`, `exp`, and `iat` claims; both `sub` and `exp` are required on decode
 - `JWT_SECRET_KEY` is validated to a minimum of 32 characters at startup
-- All protected routes use a FastAPI `Depends` guard; user ID is taken from the verified token, never from the request body
-- Database queries filter by `user_id` from the token — users cannot access other users' data
+- Protected routes use a FastAPI `Depends` guard; the user ID comes from the verified token, never the request body
+- Database queries filter by `user_id` from the token, so users cannot access other users' data
 
 **Input validation**
 - All request bodies are validated by Pydantic schemas with explicit field constraints
-- URL schema rejects non-HTTP(S) schemes and hostless inputs
-- Dict fields (`context_fields`, `safe_metadata`) have per-key and per-value length caps to prevent unbounded inputs
-- Login password is capped at 256 characters to prevent bcrypt CPU exhaustion
+- The URL schema rejects non-HTTP(S) schemes and hostless inputs
+- Dict fields (`context_fields`, `safe_metadata`) have per-key and per-value length caps to prevent unbounded input
+- Login passwords are capped at 256 characters to prevent bcrypt CPU exhaustion
 
 **Sensitive data handling**
 - Passwords are never stored, logged, or forwarded to Gemini
 - Email bodies are analysed in memory and never persisted or forwarded to AI
 - URL query parameter values are redacted before storage
-- The Gemini API key is server-side only; it is never included in any API response
-- API key is redacted from error strings and log output before they are stored or written
-- `User.__repr__` omits the email address to prevent PII appearing in logs
+- The Gemini API key is server-side only and never appears in any API response
+- The API key is redacted from error strings and log output before they are stored or written
+- `User.__repr__` omits the email address to keep PII out of logs
 
 **Transport and configuration**
-- All secrets are loaded from environment variables via pydantic-settings; no secrets in source code
+- All secrets are loaded from environment variables via pydantic-settings; none live in source code
 - `.env` and `.env.*` are excluded from Git via `.gitignore`
-- TLS verification of Gemini API calls uses the system certificate store; a warning is logged if verification is disabled
+- Gemini API calls verify TLS using the system certificate store; a warning is logged if verification is disabled
 - A global exception handler returns a generic 500 message without stack trace details
 
 **AI safety**
-- Gemini is used for explanation only; it is not involved in the risk determination
+- Gemini is used for explanation only; it plays no part in risk determination
 - All AI output is validated and sanitised before being returned to the client
 - A deterministic fallback is returned if Gemini is unavailable, quota-exhausted, or returns an empty response
 
-This application is not hardened for public internet deployment. It does not implement HTTPS termination, CSRF protection, or production-grade rate limiting.
+> **Warning: not hardened for public internet deployment.** AEGIS does not implement HTTPS termination, CSRF protection, or production-grade rate limiting.
 
 ---
 
 ## Testing
 
-Tests are located in `backend/tests/` and use pytest.
+Tests live in `backend/tests/` and use pytest.
 
 ```bash
 # Run all backend tests
@@ -414,16 +415,14 @@ pytest backend/tests/test_url_analyzer.py -v
 pytest --tb=short
 ```
 
-### Test coverage
-
-| File | What it covers |
-|------|---------------|
+| File | Coverage |
+|------|----------|
 | `test_auth.py` | Registration, login, JWT, `/me` endpoint (requires a running MySQL database) |
-| `test_url_analyzer.py` | Deterministic URL analysis service — 40+ cases |
-| `test_phishing_analyzer.py` | Deterministic email analysis service — 50+ cases |
+| `test_url_analyzer.py` | Deterministic URL analysis — 40+ cases |
+| `test_phishing_analyzer.py` | Deterministic email analysis — 50+ cases |
 | `test_password_analyzer.py` | Password scoring and entropy |
-| `test_assistant.py` | Assistant service — prompt building, sanitisation, follow-up generation (Gemini mocked) |
-| `test_security.py` | Auth hardening, data isolation, input validation (uses SQLite in-memory database) |
+| `test_assistant.py` | Prompt building, sanitisation, follow-up generation (Gemini mocked) |
+| `test_security.py` | Auth hardening, data isolation, input validation (in-memory SQLite) |
 | `test_url_corpus.py` | Batch evaluation against a URL corpus in `backend/tests/data/` |
 
 `test_auth.py` connects to the database specified in `.env`. All other tests run without a database or network connection.
@@ -434,26 +433,24 @@ pytest --tb=short
 
 ### Branching
 
-```
-main          — stable, reviewed code
-feature/<name> — new features
-fix/<name>    — bug fixes
-docs/<name>   — documentation only
-```
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable, reviewed code |
+| `feature/<name>` | New features |
+| `fix/<name>` | Bug fixes |
+| `docs/<name>` | Documentation only |
 
 ### Commit convention
 
-```
-feat(<scope>):   new feature
-fix(<scope>):    bug fix
-style(<scope>):  formatting, CSS, no logic change
-refactor:        code change with no behaviour change
-test:            adding or updating tests
-docs:            documentation only
-chore:           build, config, dependency changes
-```
-
-Examples:
+| Prefix | Use for |
+|--------|---------|
+| `feat(<scope>)` | New feature |
+| `fix(<scope>)` | Bug fix |
+| `style(<scope>)` | Formatting or CSS, no logic change |
+| `refactor` | Code change with no behaviour change |
+| `test` | Adding or updating tests |
+| `docs` | Documentation only |
+| `chore` | Build, config, or dependency changes |
 
 ```
 feat(auth): add JWT refresh token support
@@ -467,21 +464,21 @@ docs: rewrite project README
 python scripts/verify_stack.py
 ```
 
-This checks that all required files exist, services are defined in `docker-compose.yml`, and configuration is consistent.
+Checks that all required files exist, services are defined in `docker-compose.yml`, and configuration is consistent.
 
 ---
 
 ## Future Scope
 
-The following capabilities are identified as next steps but are not implemented:
+Identified next steps — none are implemented yet.
 
-- **Scan History page** — browsable history with filtering by type, date, and risk level
-- **Reports page** — PDF or CSV export of scan results
-- **Profile page** — account settings, password change
-- **HTTPS** — TLS termination at the gateway for any internet-facing deployment
-- **Persistent rate limiting** — Redis-backed rate limits that work across multiple workers
-- **Alembic migrations** — the schema is currently created via `create_all` on startup; a migration system is needed for schema changes in deployed environments
-- **Admin interface** — user management for the admin role that is modelled but not exposed
+- [ ] **Scan History page** — browsable history with filtering by type, date, and risk level
+- [ ] **Reports page** — PDF or CSV export of scan results
+- [ ] **Profile page** — account settings and password change
+- [ ] **HTTPS** — TLS termination at the gateway for any internet-facing deployment
+- [ ] **Persistent rate limiting** — Redis-backed limits that work across multiple workers
+- [ ] **Alembic migrations** — the schema is currently created via `create_all` on startup; a migration system is needed for schema changes in deployed environments
+- [ ] **Admin interface** — user management for the modelled-but-unexposed admin role
 
 ---
 
@@ -489,8 +486,6 @@ The following capabilities are identified as next steps but are not implemented:
 
 Built by a three-person team as a university semester project.
 
----
-
 ## License
 
-MIT — see [LICENSE](LICENSE) for the full text.
+Released under the MIT License — see [LICENSE](LICENSE) for the full text.
