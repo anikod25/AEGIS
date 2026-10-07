@@ -6,7 +6,12 @@ from sqlalchemy.orm import Session
 
 from backend.app.api.deps import get_current_user
 from backend.app.core.database import get_db
-from backend.app.core.security import create_access_token, hash_password, verify_password
+from backend.app.core.security import (
+    create_access_token,
+    dummy_verify,
+    hash_password,
+    verify_password,
+)
 from backend.app.models.user import User
 from backend.app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
 
@@ -27,12 +32,13 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenRe
     - Hashes the password with bcrypt — the plaintext is never persisted.
     - Returns a JWT access token immediately so the user is logged in.
     - Raises **409** if the email is already registered.
+    - The password value is never logged or included in any response.
     """
     user = User(
         name=payload.name,
         email=payload.email.lower(),
         password_hash=hash_password(payload.password),
-        # role defaults to UserRole.user
+        # role defaults to UserRole.user — never trust a role supplied by the client
     )
     db.add(user)
     try:
@@ -59,21 +65,22 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse
     Authenticate a user with email + password.
 
     - Uses a single generic error message for both wrong email and wrong
-      password to avoid user-enumeration attacks.
-    - Returns a JWT access token on success.
+      password to prevent user-enumeration attacks.
+    - When the email does not exist, runs a dummy bcrypt verify to equalise
+      response timing and prevent timing-based enumeration.
+    - The password value is never logged.
     """
     user = db.query(User).filter(User.email == payload.email.lower()).first()
 
     if user is None:
-        # Run bcrypt anyway to prevent timing-based user enumeration
-        try:
-            verify_password("dummy", "$2b$12$KIXFz4dummydummydummydummydummydummydummydumm")
-        except Exception:
-            pass
+        # Constant-time dummy check — result is always False, but ensures the
+        # code path spends similar time regardless of whether the email exists.
+        dummy_verify()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password.",
         )
+
     if not verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -90,5 +97,9 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse
     summary="Return the currently authenticated user",
 )
 def me(current_user: User = Depends(get_current_user)) -> UserResponse:
-    """Protected endpoint — requires a valid Bearer token."""
+    """Protected endpoint — requires a valid Bearer token.
+
+    The user identity comes from the validated JWT, never from a request body
+    or query parameter.
+    """
     return UserResponse.model_validate(current_user)

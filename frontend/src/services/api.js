@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AEGIS API Service Layer
  * All backend calls are centralised here.
  * Components never call fetch() directly.
@@ -21,7 +21,6 @@ async function request(method, path, body, requiresAuth = false) {
 
   const res = await fetch(`${BASE_URL}${path}`, options)
 
-  // Token expired or invalid — clear local storage and redirect to login
   if (res.status === 401) {
     localStorage.removeItem('aegis_token')
     localStorage.removeItem('aegis_user')
@@ -54,7 +53,6 @@ export const urlAnalysis = {
 }
 
 // -- Phishing --------------------------------------------------------------
-// data: { sender, reply_to, subject, body, links, attachment_names }
 export const phishing = {
   analyze: (data) => request('POST', '/v1/analysis/email', data, true),
 }
@@ -65,7 +63,6 @@ export const password = {
 }
 
 // -- AI Assistant ----------------------------------------------------------
-// message: string, history: [{role, content}], scan_context: optional
 export const assistant = {
   chat:   (message, history, scan_context = null) =>
     request('POST', '/v1/assistant/chat', { message, history, scan_context }, true),
@@ -73,24 +70,22 @@ export const assistant = {
 }
 
 // -- AI Explain ------------------------------------------------------------
-// evidence: { scan_type, risk_score, risk_level, indicators, context_fields }
-// Raw passwords and full email bodies are NEVER included in evidence.
 export const ai = {
   explain: (evidence) => request('POST', '/v1/ai/explain', evidence, true),
 }
 
 // -- Scan History ----------------------------------------------------------
 export const scanHistory = {
-  list:      (params) => request('GET',    `/scans?${new URLSearchParams(params)}`, undefined, true),
-  getById:   (id)     => request('GET',    `/scans/${id}`,                          undefined, true),
-  deleteById:(id)     => request('DELETE', `/scans/${id}`,                          undefined, true),
+  list:       (params) => request('GET',    `/v1/scans?${new URLSearchParams(params)}`, undefined, true),
+  getById:    (id)     => request('GET',    `/v1/scans/${id}`,                          undefined, true),
+  deleteById: (id)     => request('DELETE', `/v1/scans/${id}`,                          undefined, true),
 }
 
 // -- Reports ---------------------------------------------------------------
 export const reports = {
-  list:     ()     => request('GET',  '/reports',       undefined, true),
-  getById:  (id)   => request('GET',  `/reports/${id}`, undefined, true),
-  generate: (data) => request('POST', '/reports',       data,      true),
+  list:     ()     => request('GET',  '/v1/reports',       undefined, true),
+  getById:  (id)   => request('GET',  `/v1/reports/${id}`, undefined, true),
+  generate: (data) => request('POST', '/v1/reports',       data,      true),
 }
 
 // -- Gateway ---------------------------------------------------------------
