@@ -45,8 +45,8 @@ Most people run into phishing links, suspicious emails, and weak passwords regul
 | [Password Analysis](#password-analysis) | Implemented | Entropy, character classes, pattern detection |
 | [AI Security Assistant](#ai-security-assistant) | Implemented | Context-aware chat powered by Google Gemini |
 | [AI Explanation Panel](#ai-explanation-panel) | Implemented | Structured explanations of scan evidence |
-| Scan History | Planned | UI stub only |
-| Reports | Planned | UI stub only |
+| [Scan History](#scan-history) | Implemented | Browsable scan history with filtering |
+| [Reports](#reports) | Implemented | Scan-result report generation and export |
 
 ### Authentication
 - Registration and login with bcrypt password hashing
@@ -92,6 +92,19 @@ Most people run into phishing links, suspicious emails, and weak passwords regul
 - Returns a structured overview, indicator breakdown, and recommendations
 - Deterministic fallback when AI is unavailable
 
+### Scan History
+
+- Browse previously generated scan records
+- View scan results tied to the authenticated user
+- Filter and review historical scans by relevant scan attributes
+- Maintains user-level data isolation
+
+### Reports
+
+- Generate reports from scan results
+- Export security analysis results for later reference
+- Report functionality is integrated with the authenticated application
+
 ---
 
 ## System Architecture
@@ -129,7 +142,7 @@ flowchart LR
 | `/api/v1/analysis/*` | FastAPI analysis routers | URL, email, password |
 | `/api/v1/ai/*` | FastAPI AI router | Explain endpoint |
 | `/api/v1/assistant/*` | FastAPI assistant router | Chat and status |
-| `/api/reports/*` | FastAPI (stub) | Not yet implemented |
+| `/api/reports/*` | FastAPI reports router | Report generation and export |
 | `/health` | Nginx | Gateway liveness |
 | `/` | Nginx static | React SPA |
 
@@ -473,10 +486,8 @@ Checks that all required files exist, services are defined in `docker-compose.ym
 
 ## Future Scope
 
-Identified next steps — none are implemented yet.
+The following improvements remain as potential next steps:
 
-- [ ] **Scan History page** — browsable history with filtering by type, date, and risk level
-- [ ] **Reports page** — PDF or CSV export of scan results
 - [ ] **Profile page** — account settings and password change
 - [ ] **HTTPS** — TLS termination at the gateway for any internet-facing deployment
 - [ ] **Persistent rate limiting** — Redis-backed limits that work across multiple workers
