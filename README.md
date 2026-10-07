@@ -99,22 +99,25 @@ Most people run into phishing links, suspicious emails, and weak passwords regul
 AEGIS uses a monolithic FastAPI backend served behind an Nginx API gateway. All service groups (auth, analysis, AI, reports) share one Python process and one database connection pool. For a three-person semester project this is the pragmatic choice: splitting into independent services would mean duplicating JWT validation, DB session management, and Pydantic models without meaningful benefit at this scale.
 
 ```mermaid
-graph LR
+flowchart LR
+
     Browser["Browser<br/>(React SPA)"]
 
     subgraph Docker["Docker Compose stack"]
         direction LR
-        Gateway["Nginx gateway<br/>(port 80)"]
-        Backend["FastAPI backend<br/>(port 8000, internal)"]
-        DB[("MySQL 8.0<br/>(port 3306, internal)")]
+
+        Gateway["Nginx"]
+        Backend["FastAPI"]
+        DB[("MySQL")]
+
+        Gateway -->|"proxy /api/*"| Backend
+        Backend -->|"SQLAlchemy ORM"| DB
     end
 
-    Gemini["Google Gemini API<br/>(external)"]
+    Gemini["Google Gemini<br/>(external)"]
 
-    Browser -->|"HTTP / (static)<br/>HTTP /api/*"| Gateway
-    Gateway -->|"proxy /api/*"| Backend
-    Backend -->|"SQLAlchemy ORM"| DB
-    Backend -->|"HTTPS (google-genai SDK)"| Gemini
+    Browser -->|"HTTP"| Gateway
+    Backend -->|"HTTPS<br/>google-genai SDK"| Gemini
 ```
 
 ### Routing
