@@ -33,6 +33,14 @@ class ScanContext(BaseModel):
     # Safe metadata: URL host, email subject, password length/entropy only
     safe_metadata: dict[str, str] = Field(default_factory=dict, max_length=6)
 
+    @field_validator("safe_metadata")
+    @classmethod
+    def validate_safe_metadata_values(cls, v: dict[str, str]) -> dict[str, str]:
+        for value in v.values():
+            if len(value) > 200:
+                raise ValueError("Each metadata value must be at most 200 characters.")
+        return v
+
 
 # ---------------------------------------------------------------------------
 # Request

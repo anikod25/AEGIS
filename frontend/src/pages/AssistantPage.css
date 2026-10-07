@@ -1,5 +1,5 @@
-/* =========================================================
-   AI Security Assistant — two-column layout
+﻿/* =========================================================
+   AI Security Assistant â€” two-column layout
    ========================================================= */
 
 /*
@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: row;
   gap: 20px;
-  height: calc(100vh - var(--header-height) - 48px);
+  height: calc(100dvh - var(--header-height) - 48px);
   min-height: 0; /* required for nested flex scroll */
   width: 100%;
   align-items: stretch;
@@ -31,7 +31,7 @@
 /* The panel is already flex; assistant-layout stretches it to full column height. */
 
 /* =========================================================
-   Responsive — collapse FAQ below 900 px
+   Responsive â€” collapse FAQ below 900 px
    ========================================================= */
 @media (max-width: 900px) {
   .assistant-layout {
@@ -41,7 +41,7 @@
 
   /* Chat takes its natural height on small screens */
   .chat-page {
-    height: calc(100vh - var(--header-height) - 48px);
+    height: calc(100dvh - var(--header-height) - 48px);
     flex: none;
   }
 
@@ -59,6 +59,23 @@
   /* On very small screens collapse the FAQ panel further */
   .assistant-layout > aside {
     height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .assistant-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .chat-page {
+    height: calc(100dvh - var(--header-height) - 48px);
+    flex: none;
+  }
+
+  /* Hide FAQ panel on mobile */
+  .faq-panel {
+    display: none;
   }
 }
 
@@ -326,6 +343,7 @@
   flex-shrink: 0;
   transition: background 0.15s, opacity 0.15s;
   align-self: flex-end;
+  min-height: 44px;
 }
 .chat-send-btn:hover:not(:disabled) { background: var(--accent-hover); }
 .chat-send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -471,3 +489,4 @@
   background: var(--accent-dim);
   color: var(--text-primary);
 }
+

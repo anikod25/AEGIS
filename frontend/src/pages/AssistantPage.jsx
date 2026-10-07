@@ -206,7 +206,7 @@ export default function AssistantPage() {
           setMessages(prev => [
             ...prev,
             makeAssistantMsg(
-              'Session limit reached. Refresh the page to start a new conversation.',
+              'You\'ve reached the limit for this session. Refresh the page to start over.',
               true,
               null,
               [],
@@ -299,13 +299,12 @@ export default function AssistantPage() {
       <div className="chat-page">
         {/* Header */}
         <div className="chat-header">
-          <h2 className="chat-heading">AI Security Assistant</h2>
+          <h2 className="chat-heading">Security Assistant</h2>
           <p className="chat-sub">
             Ask cybersecurity questions or get explanations for your scan results.
           </p>
           <p className="chat-caveat">
-            Advisory only — cannot access external systems or execute actions.
-            AI responses may contain errors; always verify important information.
+            For guidance only. Responses may not always be accurate — verify anything important.
           </p>
         </div>
 
@@ -320,7 +319,7 @@ export default function AssistantPage() {
             /* Empty state with suggestions */
             <div className="chat-empty">
               <span className="chat-empty-icon">AI</span>
-              <p className="chat-empty-title">AEGIS Security Assistant</p>
+              <p className="chat-empty-title">How can I help?</p>
               <p className="chat-empty-desc">
                 Ask about cybersecurity concepts, threats, best practices, or
                 paste in the details of a scan result to get an explanation.
@@ -397,7 +396,7 @@ export default function AssistantPage() {
               </span>
             ) : (
               <span className="chat-input-hint">
-                Enter to send · Shift+Enter for new line
+                Press Enter to send
               </span>
             )}
             <div className="chat-input-footer-right">

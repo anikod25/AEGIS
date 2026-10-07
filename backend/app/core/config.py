@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolve .env relative to the repo root (two levels up from this file:
@@ -17,16 +18,27 @@ class Settings(BaseSettings):
     )
 
     APP_ENV: str = "development"
-    API_HOST: str = "127.0.0.1"
+    API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
 
     DATABASE_URL: str  # required — must be set in .env
+
+    # Service-to-service networking (used for informational/config purposes)
+    MYSQL_HOST: str = "localhost"
+    MYSQL_PORT: int = 3306
 
     JWT_SECRET_KEY: str  # required — must be set in .env
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     GEMINI_API_KEY: str = ""
+
+    @field_validator("JWT_SECRET_KEY")
+    @classmethod
+    def validate_jwt_secret_key(cls, v: str) -> str:
+        if len(v) < 32:
+            raise ValueError("JWT_SECRET_KEY must be at least 32 characters")
+        return v
 
 
 settings = Settings()

@@ -84,7 +84,7 @@ export default function PhishingPage() {
   return (
     <div className="ph-page">
       <div className="ph-intro">
-        <h2 className="ph-heading">Phishing Email Analysis</h2>
+        <h2 className="ph-heading">Email Analysis</h2>
         <p className="ph-sub">
           Paste email details to detect phishing indicators — spoofed senders, suspicious
           links, credential requests, and social-engineering tactics.
@@ -200,7 +200,7 @@ export default function PhishingPage() {
             disabled={loading || !form.body.trim()}
             aria-busy={loading}
           >
-            {loading ? 'Analysing…' : 'Analyse Email'}
+            {loading ? 'Analysing…' : 'Analyse'}
           </button>
           {(form.body || form.sender || result) && (
             <button type="button" className="ph-clear-btn" onClick={handleClear}>
@@ -244,7 +244,7 @@ export default function PhishingPage() {
           {/* Indicators */}
           {result.indicators.length > 0 ? (
             <div className="ph-section">
-              <h3 className="ph-section-title">Detected Indicators</h3>
+              <h3 className="ph-section-title">What we found</h3>
               <div className="ph-indicators">
                 {result.indicators.map((ind, i) => (
                   <div key={i} className="ph-indicator">
@@ -274,18 +274,13 @@ export default function PhishingPage() {
           {/* Recommendations */}
           {result.recommendations.length > 0 && (
             <div className="ph-section">
-              <h3 className="ph-section-title ph-section-title--info">Recommendations</h3>
+              <h3 className="ph-section-title ph-section-title--info">What to do</h3>
               <ul className="ph-recs">
                 {result.recommendations.map((r, i) => <li key={i}>{r}</li>)}
               </ul>
             </div>
           )}
 
-          {result.analysis_version && (
-            <div className="ph-footer">
-              Analysis engine: {result.analysis_version}
-            </div>
-          )}
         </div>
       )}
 

@@ -6,6 +6,7 @@ from collections import defaultdict
 from threading import Lock
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from backend.app.api.deps import get_current_user
@@ -92,9 +93,13 @@ def analyse_url_endpoint(
         risk_score=score,
         summary=summary,
     )
-    db.add(scan)
-    db.commit()
-    db.refresh(scan)
+    try:
+        db.add(scan)
+        db.commit()
+        db.refresh(scan)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to save scan result.")
 
     return UrlAnalysisResult(
         scan_id=scan.id,
