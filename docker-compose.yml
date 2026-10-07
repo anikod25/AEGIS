@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-aegis}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE:-aegis}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d:ro
@@ -17,6 +17,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    # Restrict MySQL to the internal network only — never exposed to the host
     networks:
       - aegis_net
 
@@ -29,8 +30,14 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    # Internal port only — traffic must come through the gateway
     expose:
       - "8000"
+    security_opt:
+      - no-new-privileges:true
+    # Prevent the container from acquiring new privileges via setuid/setgid
+    cap_drop:
+      - ALL
     networks:
       - aegis_net
 
@@ -45,6 +52,8 @@ services:
       - "${GATEWAY_PORT:-80}:80"
     volumes:
       - frontend_dist:/usr/share/nginx/html:ro
+    security_opt:
+      - no-new-privileges:true
     networks:
       - aegis_net
 
