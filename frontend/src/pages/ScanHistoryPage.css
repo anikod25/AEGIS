@@ -1,4 +1,5 @@
 ﻿.sh-page {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -254,3 +255,4 @@
   .sh-target { max-width: 100%; white-space: normal; }
   .sh-date   { white-space: normal; }
 }
+

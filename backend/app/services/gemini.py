@@ -1,5 +1,5 @@
-"""
-Gemini AI service — reusable client for AEGIS.
+﻿"""
+Gemini AI service â€” reusable client for AEGIS.
 
 Design constraints:
 - Gemini is NEVER the primary security detector.
@@ -20,19 +20,19 @@ from backend.app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Lazy singleton client — only initialised when first used
+# Lazy singleton client â€” only initialised when first used
 # ---------------------------------------------------------------------------
 _client_lock = threading.Lock()
 _client: Any = None          # google.genai.Client once initialised
 _client_error: str = ""      # set if init failed, prevents repeated retries
 
-_MODEL = "gemini-3.8-flash"  # fast, low-latency model suitable for explanations
+_MODEL = "gemini-3.1-flash-lite-preview"  # fast, low-latency model suitable for explanations
 _TIMEOUT_SECONDS = 20        # hard wall-clock timeout per request
 _MAX_OUTPUT_TOKENS = 1024    # cap to keep responses focused but not truncated
 
 
 # ---------------------------------------------------------------------------
-# Typed error codes — callers use these to give specific user messages
+# Typed error codes â€” callers use these to give specific user messages
 # ---------------------------------------------------------------------------
 
 class GeminiError(str, Enum):
@@ -73,7 +73,7 @@ def _get_client() -> Any | None:
             import certifi
 
             # Build an httpx client that trusts both certifi's CA bundle and the
-            # Windows system store — handles corporate SSL inspection proxies.
+            # Windows system store â€” handles corporate SSL inspection proxies.
             try:
                 ctx = ssl.create_default_context(cafile=certifi.where())
                 ctx.load_verify_locations(cafile=certifi.where())
@@ -92,7 +92,7 @@ def _get_client() -> Any | None:
                 http_client = httpx.Client(verify=ctx, timeout=_TIMEOUT_SECONDS)
             except Exception:
                 # Fallback: disable SSL verification (network with self-signed proxy)
-                logger.warning("TLS verification disabled for Gemini HTTP client — all Gemini responses are untrusted")
+                logger.warning("TLS verification disabled for Gemini HTTP client â€” all Gemini responses are untrusted")
                 http_client = httpx.Client(verify=False, timeout=_TIMEOUT_SECONDS)
 
             _client = genai.Client(
@@ -130,7 +130,7 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
     Send *prompt* to Gemini and return (text, None) on success, or
     (None, GeminiError) on any failure.
 
-    The caller must handle both outcomes gracefully — a non-None error
+    The caller must handle both outcomes gracefully â€” a non-None error
     means AI explanation is unavailable for this request, not that the
     security analysis failed.
     """
@@ -165,7 +165,7 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
         timed_out = thread.is_alive()
         return result[0], exc_box[0], timed_out
 
-    # Try up to 2 times — retry only on 503 transient overload
+    # Try up to 2 times â€” retry only on 503 transient overload
     for attempt in range(2):
         text, exc, timed_out = _attempt()
 
@@ -179,7 +179,7 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
                 logger.warning("Gemini quota exhausted: %s", exc)
                 return None, GeminiError.QUOTA_EXHAUSTED
             if "503" in err_str and attempt == 0:
-                logger.warning("Gemini 503 on attempt 1, retrying in 2s…")
+                logger.warning("Gemini 503 on attempt 1, retrying in 2sâ€¦")
                 import time as _time
                 _time.sleep(2)
                 continue
@@ -187,7 +187,7 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
             logger.warning("Gemini request failed: %s", safe_err)
             return None, GeminiError.API_ERROR
 
-        # No exception — check for empty response
+        # No exception â€” check for empty response
         if not text or not text.strip():
             logger.warning("Gemini returned empty response")
             return None, GeminiError.EMPTY_RESPONSE
@@ -196,3 +196,5 @@ def generate(prompt: str) -> tuple[str | None, GeminiError | None]:
 
     # Should not reach here, but satisfy the type checker
     return None, GeminiError.API_ERROR
+
+

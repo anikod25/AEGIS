@@ -1,4 +1,5 @@
-.url-page {
+﻿.url-page {
+  width: 100%;
   max-width: 740px;
   display: flex;
   flex-direction: column;
@@ -230,7 +231,7 @@
   position: relative;
 }
 .url-recs li::before {
-  content: '•';
+  content: 'â€¢';
   position: absolute;
   left: 0;
   color: var(--info);
@@ -280,3 +281,4 @@
     align-items: flex-start;
   }
 }
+

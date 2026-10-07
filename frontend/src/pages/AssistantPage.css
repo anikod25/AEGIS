@@ -1,5 +1,5 @@
-/* =========================================================
-   AI Security Assistant — two-column layout
+﻿/* =========================================================
+   AI Security Assistant â€” two-column layout
    ========================================================= */
 
 /*
@@ -11,7 +11,7 @@
   display: flex;
   flex-direction: row;
   gap: 20px;
-  height: calc(100vh - var(--header-height) - 48px);
+  height: calc(100dvh - var(--header-height) - 48px);
   min-height: 0; /* required for nested flex scroll */
   width: 100%;
   align-items: stretch;
@@ -31,7 +31,7 @@
 /* The panel is already flex; assistant-layout stretches it to full column height. */
 
 /* =========================================================
-   Responsive — collapse FAQ below 900 px
+   Responsive â€” collapse FAQ below 900 px
    ========================================================= */
 @media (max-width: 900px) {
   .assistant-layout {
@@ -41,7 +41,7 @@
 
   /* Chat takes its natural height on small screens */
   .chat-page {
-    height: calc(100vh - var(--header-height) - 48px);
+    height: calc(100dvh - var(--header-height) - 48px);
     flex: none;
   }
 
@@ -69,7 +69,7 @@
   }
 
   .chat-page {
-    height: calc(100vh - var(--header-height) - 48px);
+    height: calc(100dvh - var(--header-height) - 48px);
     flex: none;
   }
 
@@ -489,3 +489,4 @@
   background: var(--accent-dim);
   color: var(--text-primary);
 }
+
