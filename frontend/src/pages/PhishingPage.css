@@ -1,4 +1,5 @@
-.ph-page {
+﻿.ph-page {
+  width: 100%;
   max-width: 860px;
   display: flex;
   flex-direction: column;
@@ -115,7 +116,7 @@
   font-size: 13px;
 }
 
-/* Result card — mirrors UrlAnalysisPage */
+/* Result card â€” mirrors UrlAnalysisPage */
 .ph-result {
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -232,7 +233,7 @@
   position: relative;
 }
 .ph-recs li::before {
-  content: '•';
+  content: 'â€¢';
   position: absolute;
   left: 0;
   color: var(--info);
@@ -277,3 +278,4 @@
     align-items: flex-start;
   }
 }
+

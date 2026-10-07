@@ -1,10 +1,10 @@
-.stub {
+﻿.stub {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  min-height: 60vh;
+  min-height: 60dvh;
   text-align: center;
   color: var(--text-secondary);
 }
@@ -21,3 +21,4 @@
   font-weight: 600;
   letter-spacing: 0.5px;
 }
+
