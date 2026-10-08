@@ -1,4 +1,4 @@
-/* AI Explanation panel - shared across URL, Phishing and Password pages */
+/* AI Explanation panel — shared across URL, Phishing and Password pages */
 
 .ai-panel {
   border: 1px solid var(--border);
@@ -114,7 +114,7 @@
   line-height: 1.5;
 }
 .ai-list li::before {
-  content: '';
+  content: '•';
   position: absolute;
   left: 0;
 }
