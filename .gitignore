@@ -8,6 +8,7 @@ wheels/
 
 # Virtual environments
 .venv/
+.ci-venv/
 
 # Environment files
 .env

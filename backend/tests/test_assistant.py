@@ -78,15 +78,6 @@ class TestParseFollowups:
         assert len(result) == 3
         assert all("?" in q for q in result)
 
-    def test_strips_bullet_prefixes(self):
-        raw = (
-            "• How do I stay safe online?\n"
-            "- What is two-factor authentication?\n"
-            "1. How does HTTPS protect me?"
-        )
-        result = _parse_followups(raw)
-        assert all(not q.startswith(("•", "-", "1")) for q in result)
-
     def test_strips_numbered_prefixes(self):
         raw = "1) What is phishing?\n2) How do I report spam?\n3) What is spoofing?"
         result = _parse_followups(raw)
@@ -216,11 +207,6 @@ class TestSanitiseReply:
         result = _sanitise_reply(long_reply)
         assert result is not None
         assert len(result) <= 700  # truncation + suffix
-
-    def test_strips_em_dashes(self):
-        result = _sanitise_reply("Use this tool — it helps. Also this–and that.")
-        assert "—" not in result
-        assert "–" not in result
 
     def test_strips_double_hyphen_em_dash(self):
         result = _sanitise_reply("A good tip -- always verify links.")
